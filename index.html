@@ -170,6 +170,13 @@
         .modal-btn { width: 100%; padding: 12px; background: var(--primary); color: #fff; border: none; border-radius: var(--radius-md); font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         .modal-btn:hover { background: var(--primary-hover); }
 
+        /* تنسيق بطاقة التقرير الفردي للطالب */
+        #studentReportCard { display: none; padding: 20px; border: 2px dashed var(--border-color); border-radius: var(--radius-md); background: #f8fafc; margin-bottom: 20px; }
+        .sr-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+        .sr-row:last-child { border-bottom: none; }
+        .sr-label { font-weight: 700; color: var(--text-muted); font-size: 14px; }
+        .sr-val { font-weight: 800; color: var(--text-main); font-size: 14px; }
+
         /* =========================================
            ذكاء اصطناعي (AI Feature Styles)
         ========================================= */
@@ -188,11 +195,15 @@
             @page { size: A4 portrait; margin: 10mm; }
             body { background: white !important; margin: 0; padding: 0; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .controls-section, .analytics-grid, header button, .status-toggles, .action-col, .dropdown { display: none !important; }
+            
+            /* إعدادات طباعة اللوحة العامة */
+            .controls-section, .analytics-grid, .report-actions-grid, header button, .status-toggles, .action-col, .dropdown { display: none !important; }
             .table-container { box-shadow: none; border: none; margin: 0; }
             th, td { border-bottom: 1px solid #000; padding: 8px; }
             .print-status { display: block !important; font-weight: bold; }
             .modal-overlay { display: none !important; }
+
+            /* إعدادات طباعة البطاقات المخصصة */
             body.printing-card #appContainer { display: none !important; }
             body.printing-card #printArea { display: block !important; width: 100%; }
         }
@@ -923,15 +934,83 @@
         function initApp() {
             updateDateDisplay(new Date());
             const savedData = localStorage.getItem(STORAGE_KEY);
-            if (savedData) {
+            if (savedData && JSON.parse(savedData).length > 0) {
                 students = JSON.parse(savedData);
                 saveDailyHistory(); 
+                setupClassFilter();
+                filteredStudents = [...students];
+                renderAll();
             } else {
                 students = [];
+                setupClassFilter();
+                filteredStudents = [...students];
+                renderAll();
+                
+                // --- الميزة الأوتوماتيكية الجديدة ---
+                // جلب البيانات فوراً وبشكل تلقائي من رابط Github إذا كان النظام فارغاً
+                autoFetchFromGithubLink('https://raw.githubusercontent.com/hadimm2001-source/Student/main/Student.xlsx');
             }
-            setupClassFilter();
-            filteredStudents = [...students];
-            renderAll();
+        }
+
+        async function autoFetchFromGithubLink(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('فشل الوصول للرابط');
+                
+                const arrayBuffer = await response.arrayBuffer();
+                const data = new Uint8Array(arrayBuffer);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1});
+                
+                let importedCount = 0;
+                const newStudents = [];
+
+                json.forEach((row, index) => {
+                    if (!row || row.length === 0) return;
+                    if (index === 0 && (String(row[2]).includes('اسم') || String(row[0]).includes('جوال') || String(row[0]).includes('رقم'))) return;
+                    
+                    let name = '', className = '', mobile = '';
+                    if (row.length >= 3) {
+                        const colA = String(row[0] || '').trim().replace(/["']/g, '');
+                        const colB = String(row[1] || '').trim().replace(/["']/g, '');
+                        const colC = String(row[2] || '').trim().replace(/["']/g, '');
+                        if (/[a-zA-Zء-ي]/.test(colA) && /[\d]/.test(colC) && colC.length > 5) { name = colA; className = colB; mobile = colC; }
+                        else { mobile = colA; className = colB; name = colC; }
+                    } else if (row.length === 2) {
+                        const colA = String(row[0] || '').trim().replace(/["']/g, '');
+                        const colB = String(row[1] || '').trim().replace(/["']/g, '');
+                        if (/[\d]/.test(colA) && colA.length > 6) { mobile = colA; name = colB; }
+                        else if (/[\d]/.test(colB) && colB.length > 6) { mobile = colB; name = colA; }
+                        else { name = colA; className = colB; }
+                    } else if (row.length === 1) {
+                        name = String(row[0] || '').trim().replace(/["']/g, '');
+                    }
+
+                    if (name && name !== 'الاسم' && name !== 'اسم الطالب' && name !== 'Name') {
+                        newStudents.push({ 
+                            id: 'ID_' + Date.now() + Math.floor(Math.random() * 1000) + importedCount, 
+                            phone: mobile || '-', 
+                            name: name, 
+                            class: className || 'عام', 
+                            status: 'none', 
+                            time: '-', 
+                            absentCount: 0, 
+                            behaviorIssues: 0 
+                        });
+                        importedCount++;
+                    }
+                });
+
+                if (importedCount > 0) {
+                    students = newStudents;
+                    saveData();
+                    setupClassFilter();
+                    handleFilter(); 
+                    showCustomAlert('تم قراءة وتنزيل بيانات الطلاب تلقائياً من ملف Github الخاص بك! ✅', 'success');
+                }
+            } catch (error) {
+                console.error("Auto fetch error:", error);
+            }
         }
 
         function updateDateDisplay(dateObj) {
@@ -1119,12 +1198,20 @@
             });
         }
 
+        // ------------------ إدارة التفاعلات (Interactivity) ------------------
+        
         // --- دوال الاستيراد السحابي (Google Sheets / OneDrive / Github) ---
         let currentCloudType = '';
         window.openCloudImportModal = function(type) {
             if(isViewingHistory) { showCustomAlert("لا يمكنك استيراد طلاب أثناء استعراض الأرشيف. يرجى العودة لبيانات اليوم أولاً.", 'error'); return; }
             currentCloudType = type;
-            document.getElementById('cloudFileUrl').value = '';
+            
+            // تعيين الرابط الافتراضي الخاص بك مباشرة عند اختيار Github
+            if (type === 'github') {
+                document.getElementById('cloudFileUrl').value = 'https://github.com/hadimm2001-source/Student/blob/main/Student.xlsx';
+            } else {
+                document.getElementById('cloudFileUrl').value = '';
+            }
             
             let title = 'استيراد بيانات';
             if (type === 'google') title = '📊 استيراد من Google Sheets';
@@ -1154,7 +1241,7 @@
 
             let fetchUrl = url;
             
-            // ذكاء إضافي: تحويل رابط جوجل شيت العام إلى رابط تصدير CSV
+            // ذكاء إضافي: تحويل رابط جوجل شيت العام إلى رابط تصدير CSV لسهولة الجلب وتجاوز بعض حمايات المتصفح
             const gsMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
             if(currentCloudType === 'google' && gsMatch) {
                 fetchUrl = `https://docs.google.com/spreadsheets/d/${gsMatch[1]}/export?format=csv`;
@@ -1250,6 +1337,7 @@
                 btn.disabled = false;
                 closeCloudImportModal();
                 
+                // تظهر هذه الرسالة فقط إذا قام المتصفح بمنع الجلب لدواعي أمنية (CORS) أو كان الرابط غير صحيح
                 const errorMsg = "حدث خطأ أثناء جلب البيانات.\n\nالسبب المحتمل: المتصفح الخاص بك يحظر جلب البيانات من روابط خارجية لدواعي أمنية (CORS) حتى وإن كان الملف عاماً.\n\nالحل الأسرع: قم بتحميل الملف كـ Excel (xlsx) ثم استخدم خيار \"استيراد من الجهاز المحلي\".";
                 showCustomAlert(errorMsg, "error");
             }
