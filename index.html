@@ -280,6 +280,7 @@
             <div class="header-title" style="color: white;">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: white;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 نظام إدارة الحضور والغياب (الموجه الطلابي)
+                <span id="cloudSyncStatus" style="width: 12px; height: 12px; background-color: #f59e0b; border-radius: 50%; display: inline-block; margin-right: 10px; box-shadow: 0 0 8px rgba(0,0,0,0.3);" title="جاري الاتصال بالمزامنة السحابية..."></span>
             </div>
             <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
                 <div style="display: flex; align-items: center;">
@@ -784,7 +785,11 @@
     <!-- =========================================
        8. الجافاسكربت (JavaScript Logic) 
     ========================================= -->
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
         const STORAGE_KEY = 'attendance_saas_data'; 
         const HISTORY_KEY = 'attendance_saas_history'; 
         const apiKey = ""; 
@@ -793,6 +798,65 @@
         let students = [];
         let filteredStudents = [];
         let isViewingHistory = false;
+
+        // ==========================================
+        // ☁️ إعدادات المزامنة السحابية اللحظية (Cloud Sync)
+        // ==========================================
+        let db = null;
+        let currentUser = null;
+        let isRemoteUpdate = false; // لمنع التكرار عند استلام تحديث من السحابة
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'student-attendance-app-123';
+
+        if (typeof __firebase_config !== 'undefined') {
+            const firebaseConfig = JSON.parse(__firebase_config);
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            db = getFirestore(app);
+
+            const initAuth = async () => {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            };
+            initAuth();
+
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+                if (user) {
+                    setupCloudListener();
+                }
+            });
+        }
+
+        function setupCloudListener() {
+            if (!db || !currentUser) return;
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'shared_attendance', 'live_state');
+            
+            onSnapshot(docRef, (docSnap) => {
+                const syncStatus = document.getElementById('cloudSyncStatus');
+                if(syncStatus) { 
+                    syncStatus.style.backgroundColor = '#10b981'; // أخضر (متصل)
+                    syncStatus.title = 'المزامنة السحابية متصلة - التغييرات تظهر فوراً'; 
+                }
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if(data.students && data.students.length > 0) {
+                        isRemoteUpdate = true; // تفعيل هذا الفلاج حتى لا نقوم بإعادة إرسال البيانات للسحابة فور استلامها
+                        students = data.students;
+                        setupClassFilter();
+                        handleFilter(); // هذه الدالة تقوم بتحديث الجدول والإحصائيات
+                        isRemoteUpdate = false;
+                    }
+                }
+            }, (error) => {
+                console.error("خطأ في المزامنة السحابية:", error);
+                const syncStatus = document.getElementById('cloudSyncStatus');
+                if(syncStatus) { syncStatus.style.backgroundColor = '#ef4444'; syncStatus.title = 'خطأ في الاتصال بالسحابة'; } // أحمر
+            });
+        }
 
         // ==========================================
         // 🚀 إعدادات الربط المباشر مع قوقل شيت 
@@ -1000,9 +1064,16 @@
         }
 
         function saveData() {
-            if(!isViewingHistory) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
-                saveDailyHistory();
+            if(isViewingHistory) return; 
+            
+            // 1. الحفظ المحلي (كالمعتاد)
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
+            saveDailyHistory();
+
+            // 2. النشر السحابي اللحظي (ليراها صديقك في نفس اللحظة)
+            if (db && currentUser && !isRemoteUpdate) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'shared_attendance', 'live_state');
+                setDoc(docRef, { students: students }, { merge: true }).catch(e => console.error("فشل النشر السحابي", e));
             }
         }
 
