@@ -1,0 +1,37 @@
+{
+  "entities": {
+    "Student": {
+      "title": "Student",
+      "description": "Represents a student in the school.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the student" },
+        "class": { "type": "string", "description": "Class/Section of the student" },
+        "phone": { "type": "string", "description": "Phone number of the student (used as ID/Login)" }
+      },
+      "required": ["name", "class", "phone"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Represents an attendance record for a student on a specific date.",
+      "type": "object",
+      "properties": {
+        "studentPhone": { "type": "string", "description": "Reference to the student's phone number" },
+        "date": { "type": "string", "format": "date", "description": "Date of attendance (YYYY-MM-DD)" },
+        "status": { "type": "string", "enum": ["present", "absent", "late"], "description": "Attendance status" },
+        "time": { "type": "string", "description": "Time of recording" }
+      },
+      "required": ["studentPhone", "date", "status"]
+    }
+  },
+  "firestore": {
+    "students": {
+      "schema": "Student",
+      "description": "Collection of students"
+    },
+    "attendance": {
+      "schema": "Attendance",
+      "description": "Collection of attendance records"
+    }
+  }
+}
