@@ -1,0 +1,5 @@
+{
+  "name": "Remix: لوحة متابعة الحضور والغياب",
+  "description": "نظام متكامل لإدارة حضور الطلاب، تقارير ذكية، واستيراد البيانات من إكسل.",
+  "requestFramePermissions": ["notifications"]
+}

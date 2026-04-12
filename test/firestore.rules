@@ -1,0 +1,94 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: students
+// Document ID: auto-generated or phone number
+// Fields:
+//   - name: string (required) - Full name
+//   - class: string (required) - Class name
+//   - phone: string (required) - Phone number
+//
+// Collection: attendance
+// Document ID: auto-generated
+// Fields:
+//   - studentPhone: string (required) - Reference to student
+//   - date: string (required, format: YYYY-MM-DD) - Date of record
+//   - status: string (required, enum: ['present', 'absent', 'late']) - Status
+//   - time: string (optional) - Time recorded
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // For this app, we'll assume the user whose email is provided is the admin.
+    // The user email is: hadimm2001@gmail.com
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "hadimm2001@gmail.com");
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidStudent(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.class is string && data.class.size() > 0 && data.class.size() < 50 &&
+             data.phone is string && data.phone.size() >= 8 && data.phone.size() <= 20;
+    }
+
+    function isValidAttendance(data) {
+      return data.studentPhone is string &&
+             data.date is string && data.date.matches("^\\d{4}-\\d{2}-\\d{2}$") &&
+             data.status in ['present', 'absent', 'late'] &&
+             (!('time' in data) || data.time is string);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /app_data/state {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /students/{studentId} {
+      // Admin can do everything.
+      allow read, write: if isAdmin();
+      
+      // Students can search for their own record by phone number.
+      // We allow 'list' if it's a single-result query.
+      allow list: if request.query.limit == 1;
+      allow get: if true; // Allow get if they have the ID (from the list result)
+    }
+
+    match /attendance/{recordId} {
+      // Admin can do everything.
+      allow read, write: if isAdmin();
+      
+      // Students can search for their own attendance records.
+      allow list: if request.query.limit <= 100;
+      allow get: if true;
+    }
+  }
+}
