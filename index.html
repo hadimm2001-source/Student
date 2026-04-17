@@ -18,7 +18,7 @@
             --bg-body: #f8fafc; --bg-card: #ffffff; --text-main: #1e293b; --text-muted: #64748b; --border-color: #e2e8f0;
             --primary: #4f46e5; --primary-hover: #4338ca; --primary-light: #e0e7ff;
             --success: #10b981; --success-light: #d1fae5; --danger: #f43f5e; --danger-light: #ffe4e6;
-            --warning: #f59e0b; --warning-light: #fef3c7; --info: #3b82f6; --info-light: #eff6ff;
+            --warning: #f59e0b; --warning-light: #fef3c7; --info: #0ea5e9; --info-light: #e0f2fe;
             --shadow-sm: 0 1px 2px rgba(0,0,0,0.05); --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
             --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
             --radius-md: 12px; --radius-lg: 16px; --radius-xl: 24px;
@@ -57,7 +57,8 @@
         .dropdown-item:hover { background: #f8fafc; color: var(--primary); }
         
         .table-container { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color); overflow-x: auto; margin-bottom: 40px; box-shadow: var(--shadow-sm); }
-        table { width: 100%; border-collapse: collapse; text-align: right; min-width: 800px; } 
+        table { width: 100%; border-collapse: collapse; text-align: right; } 
+        .table-container table { min-width: 800px; }
         th, td { padding: 16px; border-bottom: 1px solid var(--border-color); } 
         th { background-color: #f8fafc; color: var(--text-muted); font-size: 14px; font-weight: 700; border-top: none; }
         tbody tr:hover { background-color: #f8fafc; }
@@ -69,16 +70,24 @@
         .toggle-btn.active-late { background: var(--warning); color: white; box-shadow: var(--shadow-sm); } 
         .toggle-btn.active-excused { background: var(--info); color: white; box-shadow: var(--shadow-sm); }
         
+        .time-cell { font-family: monospace; color: var(--text-muted); font-size: 14px; font-weight: bold; text-align: center; direction: ltr; }
         .delete-btn { background: transparent; border: none; color: var(--danger); cursor: pointer; font-weight: bold; transition: all 0.2s; padding: 6px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
         .delete-btn:hover { background-color: var(--danger-light); transform: scale(1.1); }
         
+        /* =========================================
+           2. تنسيقات النوافذ المنبثقة (Modals)
+        ========================================= */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(4px); } 
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
-        .modal-box { background: #fff; padding: 24px; border-radius: var(--radius-xl); width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .modal-box { background: #fff; padding: 24px; border-radius: var(--radius-xl); width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: 0 15px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
         .modal-header h3 { font-size: 18px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; margin: 0; }
         .close-btn { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; }
         .close-btn:hover { background: #fee2e2; color: var(--danger); }
+        
+        .form-label { display: block; font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; text-align: right; }
+        .modal-btn { width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: var(--radius-md); font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25); }
+        .modal-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4); }
         
         .portal-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); padding: 20px; }
         .login-box { background: white; padding: 40px; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); width: 100%; max-width: 450px; text-align: center; border: 1px solid #ffffff; }
@@ -190,8 +199,8 @@
         .pd-table th { background: #f8fafc; color: var(--text-muted); font-weight: 800; border-top: none;} 
         .pd-table td { color: var(--text-main); font-weight: 600; }
         .pd-table tbody tr:hover { background: #f8fafc; }
-        .pd-btn-excuse { background: var(--primary-light); color: var(--primary); border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.2s;} 
-        .pd-btn-excuse:hover { background: var(--primary); color: white; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(79,70,229,0.2); }
+        .pd-btn-excuse { background: linear-gradient(135deg, #38bdf8, #0284c7); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3); display: inline-flex; align-items: center; gap: 5px; } 
+        .pd-btn-excuse:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(2, 132, 199, 0.4); filter: brightness(1.05); }
         
         .pd-excuses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; } 
         .pd-excuse-card { background: white; border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 24px; display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: var(--shadow-sm); transition: transform 0.3s;} 
@@ -314,13 +323,13 @@
 
         <div class="table-container">
             <table id="attendanceTable">
-                <thead><tr><th style="width: 25%;">اسم الطالب</th><th style="width: 15%; text-align: right;">رقم الجوال</th><th style="width: 10%;">الصف</th><th style="width: 25%; text-align: center;">التحضير</th><th style="width: 15%; text-align: left;">الوقت</th><th style="width: 10%; text-align: center;">إجراء</th></tr></thead>
+                <thead><tr><th style="width: 25%;">اسم الطالب</th><th style="width: 15%; text-align: right;">رقم الجوال</th><th style="width: 10%;">الصف</th><th style="width: 25%; text-align: center;">التحضير</th><th style="width: 15%; text-align: center;">الوقت</th><th style="width: 10%; text-align: center;">إجراء</th></tr></thead>
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- واجهة الطالب (الداشبورد الفاخر المسترجع) -->
+    <!-- واجهة الطالب (الداشبورد الفاخر) -->
     <div class="container" id="studentPortalView" style="padding: 0; max-width: 100%; display: none;"></div>
 
     <div id="printArea"></div>
@@ -329,20 +338,94 @@
     <div id="customAlertModal" class="modal-overlay"><div class="modal-box" style="max-width: 400px; text-align: center;"><h3 id="customAlertTitle" style="color: var(--primary); margin-bottom: 15px; font-size: 20px;">تنبيه</h3><p id="customAlertMessage" style="margin-bottom: 30px; font-size: 16px; color: var(--text-main); font-weight: 500; line-height: 1.6;"></p><div id="customAlertButtons" style="display: flex; gap: 10px; justify-content: center;"></div></div></div>
     
     <div id="adminExcusesModal" class="modal-overlay"><div class="modal-box" style="max-width: 700px;"><div class="modal-header"><h3 style="color: var(--primary);">إدارة الأعذار</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div id="adminExcusesContent" style="max-height: 60vh; overflow-y: auto; padding-right: 5px;"></div></div></div>
-    <div id="studentExcuseModal" class="modal-overlay"><div class="modal-box" style="max-width: 500px;"><div class="modal-header"><h3 style="color: var(--primary);">رفع عذر غياب/تأخير</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">التاريخ:</label><input type="date" id="excuseDateInput" class="form-input"></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">نوع العذر:</label><select id="excuseTypeSelect" class="form-select"><option value="عذر طبي">عذر طبي</option><option value="عذر عائلي">عذر عائلي</option><option value="ظرف طارئ">ظرف طارئ</option></select></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">التفاصيل التوضيحية:</label><textarea id="excuseDescInput" class="form-input" rows="3"></textarea></div><div class="input-group" style="margin-bottom: 30px;"><label class="form-label">المرفقات (إلزامي - صورة أو PDF) <span style="color: var(--danger); font-size: 18px; vertical-align: middle;">*</span>:</label><input type="file" id="excuseFileInput" class="form-input" accept="image/*,.pdf" style="padding: 10px; background: white; border: 2px dashed var(--border-color);"></div><div style="text-align: center;"><button class="modal-btn" style="background: linear-gradient(135deg, #38bdf8, #0284c7); box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); width: auto; min-width: 220px; border-radius: 30px; padding: 12px 30px; display: inline-block; transition: transform 0.2s;" onclick="window.submitStudentExcuse()" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">إرسال العذر للإدارة</button></div></div></div>
+    
+    <div id="studentExcuseModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 style="color: var(--primary);">رفع عذر غياب/تأخير</h3>
+                <button class="close-btn" onclick="window.closeModals()">&times;</button>
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label class="form-label">التاريخ:</label>
+                <input type="date" id="excuseDateInput" class="form-input">
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label class="form-label">نوع العذر:</label>
+                <select id="excuseTypeSelect" class="form-select">
+                    <option value="عذر طبي">عذر طبي</option>
+                    <option value="عذر عائلي">عذر عائلي</option>
+                    <option value="ظرف طارئ">ظرف طارئ</option>
+                </select>
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label class="form-label">التفاصيل التوضيحية:</label>
+                <textarea id="excuseDescInput" class="form-input" rows="3"></textarea>
+            </div>
+            <div class="input-group" style="margin-bottom: 30px;">
+                <label class="form-label">المرفقات (إلزامي - صورة أو PDF) <span style="color: var(--danger); font-size: 18px; vertical-align: middle;">*</span>:</label>
+                <input type="file" id="excuseFileInput" class="form-input" accept="image/*,.pdf" style="padding: 10px; background: white; border: 2px dashed var(--border-color);">
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <button class="modal-btn" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); width: 100%; border-radius: 12px; padding: 14px; font-size: 16px;" onclick="window.submitStudentExcuse()">إرسال العذر للإدارة 📩</button>
+            </div>
+        </div>
+    </div>
+
     <div id="attachmentModal" class="modal-overlay"><div class="modal-box" style="max-width: 600px;"><div class="modal-header"><h3 style="color: var(--primary);">استعراض المرفق</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div id="attachmentContent" style="text-align: center; max-height: 65vh; overflow-y: auto;"></div></div></div>
     
-    <div id="todayReportModal" class="modal-overlay"><div class="modal-box"><div class="modal-header"><h3 style="color: var(--primary);">تقرير إحصائية اليوم</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div id="todayReportContent" style="margin-bottom: 25px;"></div><button onclick="window.exportTodayWordReport()" class="modal-btn" style="background: var(--info); box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);">تصدير التقرير (Word)</button></div></div>
+    <div id="todayReportModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 style="color: var(--primary);">تقرير إحصائية اليوم</h3>
+                <button class="close-btn" onclick="window.closeModals()">&times;</button>
+            </div>
+            <div id="todayReportContent" style="margin-bottom: 25px;"></div>
+            <button onclick="window.exportTodayWordReport()" class="modal-btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; padding: 14px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                تصدير التقرير (Word)
+            </button>
+        </div>
+    </div>
     
-    <div id="dateModal" class="modal-overlay"><div class="modal-box"><div class="modal-header"><h3>تقرير غياب لفترة محددة</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><select id="rangeClassFilter" class="form-select" style="margin-bottom: 15px;"><option value="all">جميع الفصول</option></select><div style="display: flex; gap: 15px; margin-bottom: 20px;"><div style="flex:1;"><label class="form-label" style="font-size:12px;">من تاريخ:</label><input type="date" id="fromDate" class="form-input"></div><div style="flex:1;"><label class="form-label" style="font-size:12px;">إلى تاريخ:</label><input type="date" id="toDate" class="form-input"></div></div><button class="modal-btn" onclick="window.generateDateRangeReport()">استخراج التقرير السريع</button><div id="dateRangeReportContainer" style="display: none; margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;"><div id="dateRangeReportContent" style="margin-bottom: 20px; max-height: 300px; overflow-y: auto; padding-right: 5px;"></div><button class="btn btn-outline" style="width: 100%; border-color: var(--primary); color: var(--primary);" onclick="window.exportDateRangeToWord()">حفظ كملف Word</button></div></div></div>
+    <div id="dateModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 style="color: var(--primary);">تقرير غياب لفترة محددة</h3>
+                <button class="close-btn" onclick="window.closeModals()">&times;</button>
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label class="form-label">الفصل:</label>
+                <select id="rangeClassFilter" class="form-select"><option value="all">جميع الفصول</option></select>
+            </div>
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                <div style="flex:1; min-width: 140px;">
+                    <label class="form-label" style="font-size:13px;">من تاريخ:</label>
+                    <input type="date" id="fromDate" class="form-input">
+                </div>
+                <div style="flex:1; min-width: 140px;">
+                    <label class="form-label" style="font-size:13px;">إلى تاريخ:</label>
+                    <input type="date" id="toDate" class="form-input">
+                </div>
+            </div>
+            <button class="modal-btn" style="background: linear-gradient(135deg, #4f46e5, #4338ca); box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);" onclick="window.generateDateRangeReport()">استخراج التقرير السريع</button>
+            
+            <div id="dateRangeReportContainer" style="display: none; margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <div id="dateRangeReportContent" style="margin-bottom: 20px; max-height: 300px; overflow-y: auto; padding-right: 5px;"></div>
+                <button class="modal-btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; padding: 14px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" onclick="window.exportDateRangeToWord()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    حفظ التقرير (Word) 📄
+                </button>
+            </div>
+        </div>
+    </div>
     
-    <div id="pdfPrintModal" class="modal-overlay"><div class="modal-box"><div class="modal-header"><h3>التقرير الشامل للمدرسة</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;"><button onclick="window.executePdfDownload()" id="pdfDownloadBtn" class="modal-btn" style="background: var(--danger); box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);">تحميل نسخة PDF</button><button onclick="window.exportGeneralReportToWord()" class="modal-btn" style="background: var(--primary); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">تصدير نسخة Word</button><button onclick="window.executeDirectPrint()" class="modal-btn" style="background: var(--success); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">طباعة مباشرة 🖨️</button></div></div></div>
+    <div id="pdfPrintModal" class="modal-overlay"><div class="modal-box"><div class="modal-header"><h3>التقرير الشامل للمدرسة</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;"><button onclick="window.executePdfDownload()" id="pdfDownloadBtn" class="modal-btn" style="background: linear-gradient(135deg, #f43f5e, #e11d48); box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);">تحميل نسخة PDF 📥</button><button onclick="window.exportGeneralReportToWord()" class="modal-btn" style="background: linear-gradient(135deg, #4f46e5, #4338ca); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">تصدير نسخة Word 📄</button><button onclick="window.executeDirectPrint()" class="modal-btn" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">طباعة مباشرة 🖨️</button></div></div></div>
 
-    <div id="studentModal" class="modal-overlay"><div class="modal-box" style="max-width: 550px;"><div class="modal-header"><h3>تقرير تفصيلي لطالب</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><label class="form-label" style="margin-bottom:8px;">ابحث واختر الطالب من القائمة:</label><select id="studentSelectDropdown" class="form-select" style="margin-bottom: 20px;" onchange="window.previewStudentReport(this.value)"><option value="">-- يرجى الاختيار --</option></select><div id="reportCaptureArea" style="background: white; padding: 15px; border-radius: var(--radius-lg); display: none; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);"><div id="studentReportCard" style="padding: 20px; border: 2px dashed var(--border-color); border-radius: var(--radius-md); background: #f8fafc; margin-bottom: 25px;"><h4 style="text-align:center; color:var(--primary); margin-bottom:20px; font-size:18px;">إشعار حالة حضور وانصراف</h4><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">الاسم:</span><strong id="sr-name" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">الصف:</span><strong id="sr-class" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">الجوال:</span><strong id="sr-phone" dir="ltr" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">التاريخ:</span><strong id="sr-date" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">حالة اليوم:</span><strong id="sr-status" style="font-size:16px;"></strong></div><div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);font-weight:700;">تراكمي الغياب:</span><strong id="sr-absences" style="color:var(--danger);font-size:16px;"></strong></div></div><div id="studentJourney"><h4 style="font-size: 16px; margin-bottom: 15px; color: var(--text-main); font-weight:800;">سجل الانضباط الأخير:</h4><div class="d-timeline-wrapper" style="background:#1e1b4b; padding:30px 15px; border-radius:16px;"><div class="d-timeline"><div class="d-tl-line"></div><div class="d-tl-dots" id="sj-dots-path"></div></div></div></div></div><div style="display: flex; gap: 15px; margin-top: 25px;"><button id="captureStudentReportBtn" class="btn" style="flex:1; background: var(--info); color: white; display:none; justify-content:center;" onclick="window.captureStudentReport()">حفظ كصورة 📸</button><button id="draftAiBtn" class="btn" style="flex:1; background: #25d366; color: white; display:none; justify-content:center;" onclick="window.draftParentMessage()">رسالة واتساب ✨</button></div><div id="aiLoadingIndicator" class="ai-loading">جاري الصياغة الذكية...</div><div id="aiMessageResult" class="ai-box" style="display: none; background: #f0fdf4; border-color: #86efac;"><p id="aiMessageText" style="color: #166534; font-size: 15px; line-height: 1.6; margin-bottom: 15px;"></p><button class="btn btn-outline" style="width: 100%; border-color: #15803d; color: #15803d;" onclick="window.copyAiMessage()">نسخ النص 📋</button></div></div></div>
+    <div id="studentModal" class="modal-overlay"><div class="modal-box" style="max-width: 550px;"><div class="modal-header"><h3>تقرير تفصيلي لطالب</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><label class="form-label" style="margin-bottom:8px;">ابحث واختر الطالب من القائمة:</label><select id="studentSelectDropdown" class="form-select" style="margin-bottom: 20px;" onchange="window.previewStudentReport(this.value)"><option value="">-- يرجى الاختيار --</option></select><div id="reportCaptureArea" style="background: white; padding: 15px; border-radius: var(--radius-lg); display: none; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);"><div id="studentReportCard" style="padding: 20px; border: 2px dashed var(--border-color); border-radius: var(--radius-md); background: #f8fafc; margin-bottom: 25px;"><h4 style="text-align:center; color:var(--primary); margin-bottom:20px; font-size:18px;">إشعار حالة حضور وانصراف</h4><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">الاسم:</span><strong id="sr-name" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">الصف:</span><strong id="sr-class" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">الجوال:</span><strong id="sr-phone" dir="ltr" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">التاريخ:</span><strong id="sr-date" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">حالة اليوم:</span><strong id="sr-status" style="font-size:16px;"></strong></div><div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);font-weight:700;">تراكمي الغياب:</span><strong id="sr-absences" style="color:var(--danger);font-size:16px;"></strong></div></div><div id="studentJourney"><h4 style="font-size: 16px; margin-bottom: 15px; color: var(--text-main); font-weight:800;">سجل الانضباط الأخير:</h4><div class="d-timeline-wrapper" style="background:#1e1b4b; padding:30px 15px; border-radius:16px;"><div class="d-timeline"><div class="d-tl-line"></div><div class="d-tl-dots" id="sj-dots-path"></div></div></div></div></div><div style="display: flex; gap: 15px; margin-top: 25px;"><button id="captureStudentReportBtn" class="modal-btn" style="flex:1; background: var(--info); color: white; display:none; justify-content:center;" onclick="window.captureStudentReport()">حفظ كصورة 📸</button><button id="draftAiBtn" class="modal-btn" style="flex:1; background: #25d366; color: white; display:none; justify-content:center;" onclick="window.draftParentMessage()">رسالة واتساب ✨</button></div><div id="aiLoadingIndicator" class="ai-loading">جاري الصياغة الذكية...</div><div id="aiMessageResult" class="ai-box" style="display: none; background: #f0fdf4; border-color: #86efac;"><p id="aiMessageText" style="color: #166534; font-size: 15px; line-height: 1.6; margin-bottom: 15px;"></p><button class="modal-btn" style="background: linear-gradient(135deg, #166534, #14532d);" onclick="window.copyAiMessage()">نسخ النص 📋</button></div></div></div>
 
-    <div id="riskModal" class="modal-overlay"><div class="modal-box" style="max-width: 650px;"><div class="modal-header"><h3 style="color: var(--danger);">تقرير الطلاب المنذرين ⚠️</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div id="riskContent" style="max-height: 350px; overflow-y: auto; padding-right: 5px;"></div><div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);"><button class="modal-btn" style="background: linear-gradient(135deg, #8b5cf6, #c084fc); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);" onclick="window.generateRiskActionPlan()">✨ توليد خطة تدخل إرشادية (AI)</button><div id="riskAiLoading" class="ai-loading" style="color: #8b5cf6;">جاري إعداد الخطة التربوية...</div><div id="riskAiResult" class="ai-box" style="max-height: 250px; overflow-y: auto; background: #faf5ff; border-color: #d8b4fe; color: #4c1d95;"></div></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px; color: var(--danger); border-color: var(--danger);" onclick="window.exportRiskReportToWord()">استخراج التقرير بالكامل (Word)</button></div></div>
+    <div id="riskModal" class="modal-overlay"><div class="modal-box" style="max-width: 650px;"><div class="modal-header"><h3 style="color: var(--danger);">تقرير الطلاب المنذرين ⚠️</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div id="riskContent" style="max-height: 350px; overflow-y: auto; padding-right: 5px;"></div><div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);"><button class="modal-btn" style="background: linear-gradient(135deg, #8b5cf6, #c084fc); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);" onclick="window.generateRiskActionPlan()">✨ توليد خطة تدخل إرشادية (AI)</button><div id="riskAiLoading" class="ai-loading" style="color: #8b5cf6;">جاري إعداد الخطة التربوية...</div><div id="riskAiResult" class="ai-box" style="max-height: 250px; overflow-y: auto; background: #faf5ff; border-color: #d8b4fe; color: #4c1d95;"></div></div><button class="modal-btn" style="background: linear-gradient(135deg, #f43f5e, #e11d48); margin-top: 20px;" onclick="window.exportRiskReportToWord()">استخراج التقرير بالكامل (Word) 📄</button></div></div>
 
-    <div id="behaviorModal" class="modal-overlay"><div class="modal-box" style="max-width: 600px;"><div class="modal-header"><h3 style="color: var(--warning); display: flex; align-items: center; gap: 8px;">🛑 تسجيل مشكلة سلوكية</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الفصل:</label><select id="behaviorClassSelect" class="form-select" onchange="window.populateBehaviorStudents()"><option value="">-- اختر --</option></select></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الطالب المعني:</label><select id="behaviorStudentSelect" class="form-select"><option value="">-- اختر الفصل أولاً --</option></select></div><div class="input-group" style="margin-bottom: 20px;"><label class="form-label">وصف المشكلة السلوكية:</label><textarea id="behaviorDescription" class="form-input" rows="4" placeholder="اكتب تفاصيل المخالفة هنا بدقة..."></textarea></div><div style="border: 2px dashed var(--border-color); padding: 20px; text-align: center; margin-bottom: 25px; border-radius: var(--radius-md); background: #f8fafc;"><p style="font-size:13px; color:var(--text-muted); margin-bottom:12px; font-weight:bold;">للحصول على التصنيف الدقيق، ارفق دليل المواظبة (اختياري)</p><input type="file" id="behaviorPdfInput" accept="application/pdf" style="display: none;" onchange="window.handleBehaviorPdfUpload(event)"><button class="btn btn-outline" style="background: white;" onclick="document.getElementById('behaviorPdfInput').click()">📥 إرفاق ملف الـ PDF</button></div><button class="modal-btn" style="background: var(--warning); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);" onclick="window.analyzeBehavior()">✨ تصنيف آلي واقتراح الإجراء</button><div id="behaviorLoading" class="ai-loading" style="color: var(--warning);">جاري مطابقة الحالة مع الدليل...</div><div id="behaviorResultContainer" style="display: none; margin-top: 20px;"><div id="behaviorResult" class="ai-box" style="display: block; background: #fffbeb; border-color: #fcd34d; color: #92400e; max-height: 250px; overflow-y:auto;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 15px; color: var(--warning); border-color: var(--warning);" onclick="window.exportBehaviorToWord()">تصدير المحضر (Word)</button></div></div></div>
+    <div id="behaviorModal" class="modal-overlay"><div class="modal-box" style="max-width: 600px;"><div class="modal-header"><h3 style="color: var(--warning); display: flex; align-items: center; gap: 8px;">🛑 تسجيل مشكلة سلوكية</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الفصل:</label><select id="behaviorClassSelect" class="form-select" onchange="window.populateBehaviorStudents()"><option value="">-- اختر --</option></select></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الطالب المعني:</label><select id="behaviorStudentSelect" class="form-select"><option value="">-- اختر الفصل أولاً --</option></select></div><div class="input-group" style="margin-bottom: 20px;"><label class="form-label">وصف المشكلة السلوكية:</label><textarea id="behaviorDescription" class="form-input" rows="4" placeholder="اكتب تفاصيل المخالفة هنا بدقة..."></textarea></div><div style="border: 2px dashed var(--border-color); padding: 20px; text-align: center; margin-bottom: 25px; border-radius: var(--radius-md); background: #f8fafc;"><p style="font-size:13px; color:var(--text-muted); margin-bottom:12px; font-weight:bold;">للحصول على التصنيف الدقيق، ارفق دليل المواظبة (اختياري)</p><input type="file" id="behaviorPdfInput" accept="application/pdf" style="display: none;" onchange="window.handleBehaviorPdfUpload(event)"><button class="modal-btn" style="background: linear-gradient(135deg, #64748b, #475569);" onclick="document.getElementById('behaviorPdfInput').click()">📥 إرفاق ملف الـ PDF</button></div><button class="modal-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);" onclick="window.analyzeBehavior()">✨ تصنيف آلي واقتراح الإجراء</button><div id="behaviorLoading" class="ai-loading" style="color: var(--warning);">جاري مطابقة الحالة مع الدليل...</div><div id="behaviorResultContainer" style="display: none; margin-top: 20px;"><div id="behaviorResult" class="ai-box" style="display: block; background: #fffbeb; border-color: #fcd34d; color: #92400e; max-height: 250px; overflow-y:auto;"></div><button class="modal-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-top: 15px;" onclick="window.exportBehaviorToWord()">تصدير المحضر (Word) 📄</button></div></div></div>
 
     <div id="bottomNotification" class="bottom-notification-bar">
         <div class="bn-content">
@@ -358,7 +441,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, deleteField } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
         // إعدادات النظام والمتغيرات العامة
@@ -421,13 +504,16 @@
             if (user) window.setupCloudListener(); 
         });
 
-        const getWordWrapper = (title, content) => `<html dir='rtl'><head><meta charset='utf-8'><title>${title}</title><style>body{font-family: Arial, sans-serif; direction: rtl; text-align: right;} table{width: 100%; border-collapse: collapse; margin-top: 20px;} th, td{border: 1px solid #000; padding: 8px; text-align: center;} th{background-color: #f1f5f9;}</style></head><body><div style="text-align:right; font-weight:bold; margin-bottom:20px;">المملكة العربية السعودية<br>وزارة التعليم<br>مدرسة الجشة المتوسطة</div>${content}<br><br><table style="width:100%;border:none;margin-top:40px;"><tr style="border:none;"><td style="border:none;text-align:right;">الموجه الطلابي:<br><br>عبدالهادي المحسن</td><td style="border:none;text-align:left;">مدير المدرسة:<br><br>...................</td></tr></table></body></html>`;
+        // دالة تصدير الوورد بتنسيقات متقدمة وإجبار استخدام خط تجوال وتلوين العناصر
+        const getWordWrapper = (title, content) => `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40' dir='rtl'><head><meta charset='utf-8'><title>${title}</title><style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap'); body, table, th, td, p, h1, h2, h3, h4, div, span { font-family: 'Tajawal', 'Arial', sans-serif !important; } body { direction: rtl; text-align: right; color: #1e293b; background: #ffffff; } .header-text { text-align: center; font-size: 14pt; font-weight: bold; line-height: 1.6; margin-bottom: 30px; color: #1e293b; } table { width: 100%; border-collapse: collapse; margin-top: 20px; border: 1px solid #cbd5e1; } th, td { border: 1px solid #cbd5e1; padding: 12px; text-align: center; font-size: 13pt; font-family: 'Tajawal', 'Arial', sans-serif; } th { background-color: #4f46e5; color: white; font-weight: bold; } h1 { color: #4f46e5; font-size: 18pt; text-decoration: none; margin-bottom: 15px; text-align: center; padding-bottom: 10px; display: block; font-family: 'Tajawal', sans-serif; }</style></head><body><div class="header-text">المملكة العربية السعودية<br>وزارة التعليم<br>الإدارة العامة للتعليم بمحافظة الأحساء<br>مدرسة الجشة المتوسطة</div><div style="text-align: center; font-family: 'Tajawal', sans-serif;">${content}</div><br><br><br><table style="width: 100%; border: none; margin-top: 40px;"><tr style="border: none;"><td style="border: none; text-align: right; font-weight: bold; width: 50%; font-size: 14pt; color: #1e293b;">الموجه الطلابي:<br><br>عبدالهادي بن محمد المحسن<br><br>التوقيع: .......................</td><td style="border: none; text-align: left; font-weight: bold; width: 50%; font-size: 14pt; color: #1e293b;">مدير المدرسة:<br><br><br><br>التوقيع: .......................</td></tr></table></body></html>`;
 
         // ==========================================
         // دوال المزامنة السحابية (Real-time Sync)
         // ==========================================
         window.setupCloudListener = () => { 
             if (!window.db || !window.currentUser) return; 
+            
+            // 1. الاستماع لملف السجل والطلاب
             onSnapshot(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'shared_attendance', 'live_state'), docSnap => { 
                 const el = document.getElementById('cloudSyncStatus'); if(el) el.style.backgroundColor = '#10b981'; 
                 const pSync = document.getElementById('parentSyncStatus'); 
@@ -446,8 +532,6 @@
                         localStorage.setItem(window.STORAGE_KEY, JSON.stringify(window.students)); 
                     } 
                     if(data.history) { localStorage.setItem(window.HISTORY_KEY, JSON.stringify(data.history)); } 
-                    if(data.excuses) { localStorage.setItem(window.EXCUSES_KEY, JSON.stringify(data.excuses)); }
-                    window.updateExcuseBadge();
                     
                     window.setupClassFilter(); 
                     window.handleFilter(); 
@@ -464,6 +548,24 @@
                     window.isRemoteUpdate = false; 
                 } 
             }); 
+            
+            // 2. الاستماع لملفات الأعذار المستقلة لضمان عدم تجاوز سعة الملف (1MB Limit Fix)
+            onSnapshot(collection(window.db, 'artifacts', window.appId, 'public', 'data', 'excuses'), snap => {
+                let ex = [];
+                snap.forEach(d => {
+                    ex.push(d.data());
+                });
+                localStorage.setItem(window.EXCUSES_KEY, JSON.stringify(ex));
+                window.updateExcuseBadge();
+                
+                if(document.getElementById('adminExcusesModal').classList.contains('active')) {
+                    window.openAdminExcusesModal();
+                }
+                const portal = document.getElementById('studentPortalView');
+                if (portal && portal.style.display === 'block') {
+                     window.renderCurrentPortalTab();
+                }
+            });
         };
 
         window.saveData = () => { 
@@ -475,8 +577,11 @@
             localStorage.setItem(window.HISTORY_KEY, JSON.stringify(hist)); 
             
             if (window.db && window.currentUser && !window.isRemoteUpdate) { 
-                const exc = JSON.parse(localStorage.getItem(window.EXCUSES_KEY)) || []; 
-                setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'shared_attendance', 'live_state'), { students: window.students, history: hist, excuses: exc }, { merge: true }).then(()=>{
+                setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'shared_attendance', 'live_state'), { 
+                    students: window.students, 
+                    history: hist, 
+                    excuses: deleteField() // إزالة الأعذار من الملف الرئيسي لتخفيف الحجم ومنع خطأ 1MB
+                }, { merge: true }).then(()=>{
                     const el = document.getElementById('cloudSyncStatus'); 
                     if(el) { el.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.3)'; setTimeout(() => el.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)', 500); }
                 }).catch(e => console.error("Firebase Save Error:", e)); 
@@ -543,15 +648,15 @@
 
         window.showCustomAlert = (msg, type = 'info') => { 
             window.setTxt('customAlertTitle', 'تنبيه النظام'); 
-            window.setTxt('customAlertMessage', msg); 
-            document.getElementById('customAlertButtons').innerHTML = `<button class="btn btn-primary" style="width: 100%;" onclick="window.closeModals()">موافق، فهمت</button>`; 
+            document.getElementById('customAlertMessage').innerHTML = msg; 
+            document.getElementById('customAlertButtons').innerHTML = `<button class="modal-btn" style="width: 100%;" onclick="window.closeModals()">موافق، فهمت</button>`; 
             document.getElementById('customAlertModal').classList.add('active'); 
         };
         
         window.showCustomConfirm = (msg, func) => { 
             window.setTxt('customAlertTitle', 'تأكيد الإجراء'); 
             window.setTxt('customAlertMessage', msg); 
-            document.getElementById('customAlertButtons').innerHTML = `<button class="btn btn-danger" style="flex:1;" onclick="window.closeModals(); ${func}">نعم، متأكد</button><button class="btn btn-outline" style="flex:1;" onclick="window.closeModals()">إلغاء</button>`; 
+            document.getElementById('customAlertButtons').innerHTML = `<button class="modal-btn" style="flex:1; background: var(--danger); box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);" onclick="window.closeModals(); ${func}">نعم، متأكد</button><button class="modal-btn" style="flex:1; background: var(--text-muted); box-shadow: none;" onclick="window.closeModals()">إلغاء</button>`; 
             document.getElementById('customAlertModal').classList.add('active'); 
         };
 
@@ -822,7 +927,11 @@
                 let tarSt = st==='accepted'?'excused':'absent'; 
                 if(dStr===window.getTodayString()) window.changeStatus(sId, tarSt); 
                 else if(hs[dStr]){ let sr=hs[dStr].find(x=>x.id===sId); if(sr){ sr.status=tarSt; localStorage.setItem(window.HISTORY_KEY,JSON.stringify(hs)); window.saveData(); } } 
-                if (window.db && window.currentUser) setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'shared_attendance', 'live_state'), { excuses: ex }, { merge: true }); 
+                
+                if (window.db && window.currentUser) {
+                    setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'excuses', eId), { status: st, notified: false }, { merge: true }); 
+                }
+                
                 window.openAdminExcusesModal(); 
                 window.updateExcuseBadge();
             } 
@@ -1078,12 +1187,12 @@
             ex.filter(e=>e.studentId===s.id).sort((a,b)=>new Date(b.date)-new Date(a.date)).forEach(e=>{ 
                 let st=e.status==='accepted'?'تم القبول ✅':e.status==='rejected'?'تم الرفض ❌':'قيد المراجعة ⏳'; 
                 let c=e.status==='accepted'?'accepted':e.status==='rejected'?'rejected':'pending'; 
-                h+=`<div class="pd-excuse-card status-${c}"><div class="pd-ec-header"><div class="pd-ec-date">التاريخ المرتبط: ${e.date}</div><div class="pd-ec-badge ${c}">${st}</div></div><div class="pd-ec-body"><div class="pd-ec-title">نوع العذر: ${e.type}</div><div class="pd-ec-desc">${e.desc||'لا توجد تفاصيل إضافية مسجلة.'}</div></div>${e.file?`<div class="pd-ec-footer"><button onclick="window.viewExcuseAttachment('${e.id}')" class="btn btn-outline" style="font-size:13px; padding:8px 16px; width:100%;">استعراض المرفق 📎</button></div>`:''}</div>`; 
+                h+=`<div class="pd-excuse-card status-${c}"><div class="pd-ec-header"><div class="pd-ec-date">التاريخ المرتبط: ${e.date}</div><div class="pd-ec-badge ${c}">${st}</div></div><div class="pd-ec-body"><div class="pd-ec-title">نوع العذر: ${e.type}</div><div class="pd-ec-desc">${e.desc||'لا توجد تفاصيل إضافية مسجلة.'}</div></div>${e.file?`<div class="pd-ec-footer"><button onclick="window.viewExcuseAttachment('${e.id}')" class="btn btn-outline" style="font-size:13px; padding:8px 16px; width:100%; border: 1px solid var(--border-color);">استعراض المرفق 📎</button></div>`:''}</div>`; 
             }); 
             return `
             <div class="d-title-container" style="align-items:center;">
                 <div><h1 style="color:var(--primary);">الأعذار والمبررات</h1><p>سجل الأعذار التي قمت بتقديمها للإدارة وحالتها الحالية</p></div>
-                <button class="btn btn-primary" style="box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); padding: 12px 24px; font-size: 15px;" onclick="window.openExcuseForm()">+ رفع عذر جديد</button>
+                <button class="modal-btn" style="width: auto; background: linear-gradient(135deg, #4f46e5, #4338ca); padding: 12px 24px; font-size: 15px;" onclick="window.openExcuseForm()">+ رفع عذر جديد</button>
             </div>
             <div class="pd-excuses-grid">${h||'<div style="grid-column:1/-1; text-align:center; padding:50px; background:white; border-radius:var(--radius-lg); border:1px dashed var(--border-color);"><h3 style="color:var(--text-muted); margin:0;">لا توجد أي أعذار مقدمة من قبلك حتى الآن.</h3></div>'}</div>`; 
         };
@@ -1095,29 +1204,179 @@
             if(!d)return window.showCustomAlert('الرجاء تحديد تاريخ الغياب أو التأخير المطلوب تبريره.');
             if(!f.files || f.files.length === 0) return window.showCustomAlert('إرفاق المستند (صورة أو PDF) إلزامي جداً لإرسال العذر.');
             
+            const file = f.files[0];
+            if (file.size > 700 * 1024) { // 700 KB
+                return window.showCustomAlert('حجم المرفق كبير جداً (أكبر من 700 كيلوبايت). يرجى تقليل جودة الصورة أو اختيار ملف PDF أصغر حجماً لضمان وصوله للإدارة بنجاح.');
+            }
+            
             const s=window.currentPortalStudents[window.activePortalStudentIndex]; let ex=JSON.parse(localStorage.getItem(window.EXCUSES_KEY))||[];
+            
             const sv=(data,type)=>{
-                ex.push({id:'EXC_'+Date.now(),studentId:s.id,studentName:s.name,date:d,type:t,desc:desc,file:data,fileType:type,status:'pending',notified:false});
-                localStorage.setItem(window.EXCUSES_KEY,JSON.stringify(ex));
-                if (window.db && window.currentUser) setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'shared_attendance', 'live_state'), { excuses: ex }, { merge: true });
-                window.closeModals(); window.showCustomAlert('تم تقديم العذر وإرساله للإدارة بنجاح! شكراً لك.'); window.renderCurrentPortalTab();
+                const btn = document.querySelector('#studentExcuseModal .modal-btn');
+                const origTxt = btn.innerHTML;
+                btn.innerHTML = 'جاري الإرسال... ⏳';
+                btn.disabled = true;
+                
+                const newExcuse = {id:'EXC_'+Date.now(),studentId:s.id,studentName:s.name,date:d,type:t,desc:desc,file:data,fileType:type,status:'pending',notified:false};
+                
+                if (window.db && window.currentUser) { 
+                    setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'excuses', newExcuse.id), newExcuse)
+                    .then(()=>{
+                        btn.innerHTML = origTxt; btn.disabled = false;
+                        window.closeModals(); window.showCustomAlert('تم تقديم العذر وإرساله للإدارة بنجاح! شكراً لك.');
+                    }).catch(e=>{
+                        btn.innerHTML = origTxt; btn.disabled = false;
+                        window.showCustomAlert('حدث خطأ أثناء الإرسال. يرجى اختيار ملف أصغر والمحاولة مجدداً.');
+                    });
+                } else {
+                    ex.push(newExcuse);
+                    localStorage.setItem(window.EXCUSES_KEY,JSON.stringify(ex));
+                    btn.innerHTML = origTxt; btn.disabled = false;
+                    window.closeModals(); window.showCustomAlert('تم تقديم العذر محلياً بنجاح!'); window.renderCurrentPortalTab();
+                }
             };
-            if(f.files&&f.files.length>0){ const r=new FileReader(); r.onload=e=>sv(e.target.result,f.files[0].type); r.readAsDataURL(f.files[0]); }else sv(null,null);
+            const r=new FileReader(); r.onload=e=>sv(e.target.result,file.type); r.readAsDataURL(file);
         };
 
         window.viewExcuseAttachment = id => { const ex=JSON.parse(localStorage.getItem(window.EXCUSES_KEY))||[]; const e=ex.find(x=>x.id===id); if(!e||!e.file)return; const c=document.getElementById('attachmentContent'); c.innerHTML=(e.fileType&&e.fileType.includes('pdf'))?`<iframe src="${e.file}" style="width:100%;height:450px;border:none;border-radius:12px;"></iframe>`:`<img src="${e.file}" style="max-width:100%;max-height:450px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);">`; c.innerHTML+=`<br><a href="${e.file}" download="مرفق_العذر" class="btn btn-primary" style="margin-top:15px; width:100%;">تحميل المرفق للجهاز 📥</a>`; document.getElementById('attachmentModal').classList.add('active'); };
 
-        window.openTodayReportModal = () => { const m=document.getElementById('todayReportModal'); if(m){ const t=window.students.length, p=window.students.filter(s=>s.status==='present').length, a=window.students.filter(s=>s.status==='absent').length, l=window.students.filter(s=>s.status==='late').length, e=window.students.filter(s=>s.status==='excused').length; document.getElementById('todayReportContent').innerHTML=`<table style="width:100%;text-align:center;border-collapse:collapse;" dir="rtl"><thead><tr style="background:#f1f5f9;"><th style="padding:12px;border:1px solid #e2e8f0; font-weight:800;">الحالة</th><th style="padding:12px;border:1px solid #e2e8f0; font-weight:800;">العدد</th></tr></thead><tbody><tr><td style="padding:12px;border:1px solid #e2e8f0;background:#d1fae5;color:#10b981;font-weight:bold;">حاضر</td><td style="padding:12px;border:1px solid #e2e8f0; font-weight:bold; font-size:16px;">${p}</td></tr><tr><td style="padding:12px;border:1px solid #e2e8f0;background:#ffe4e6;color:#f43f5e;font-weight:bold;">غائب</td><td style="padding:12px;border:1px solid #e2e8f0; font-weight:bold; font-size:16px;">${a}</td></tr><tr><td style="padding:12px;border:1px solid #e2e8f0;background:#e0f2fe;color:#0ea5e9;font-weight:bold;">بعذر</td><td style="padding:12px;border:1px solid #e2e8f0; font-weight:bold; font-size:16px;">${e}</td></tr><tr><td style="padding:12px;border:1px solid #e2e8f0;background:#fef3c7;color:#f59e0b;font-weight:bold;">متأخر</td><td style="padding:12px;border:1px solid #e2e8f0; font-weight:bold; font-size:16px;">${l}</td></tr><tr><td style="padding:12px;border:1px solid #e2e8f0;font-weight:800;background:#f8fafc;">إجمالي الطلاب المسجلين</td><td style="padding:12px;border:1px solid #e2e8f0;font-weight:800; font-size:18px; color:var(--primary);">${t}</td></tr></tbody></table>`; m.classList.add('active'); } };
-        window.exportTodayWordReport = () => { const t=window.students.length, p=window.students.filter(s=>s.status==='present').length, a=window.students.filter(s=>s.status==='absent').length, l=window.students.filter(s=>s.status==='late').length, e=window.students.filter(s=>s.status==='excused').length; const d=new Date().toLocaleDateString('ar-SA'); const c=`<h1>تقرير الإحصائية اليومية</h1><p style="text-align:center;">التاريخ: ${d}</p><table><tr><td style="color:#10b981;font-weight:bold;">حاضر</td><td>${p}</td></tr><tr><td style="color:#f43f5e;font-weight:bold;">غائب</td><td>${a}</td></tr><tr><td style="color:#0ea5e9;font-weight:bold;">بعذر</td><td>${e}</td></tr><tr><td style="color:#f59e0b;font-weight:bold;">متأخر</td><td>${l}</td></tr><tr><td style="font-weight:bold;">إجمالي الطلاب</td><td>${t}</td></tr></table>`; const w=getWordWrapper('تقرير اليوم',c); const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const lk=document.createElement('a'); lk.href=u; lk.download='تقرير_اليوم.doc'; lk.click(); window.closeModals(); };
+        window.openTodayReportModal = () => { 
+            const m=document.getElementById('todayReportModal'); 
+            if(m){ 
+                const t=window.students.length, p=window.students.filter(s=>s.status==='present').length, a=window.students.filter(s=>s.status==='absent').length, l=window.students.filter(s=>s.status==='late').length, e=window.students.filter(s=>s.status==='excused').length; 
+                document.getElementById('todayReportContent').innerHTML=`
+                <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden;">
+                    <table style="width:100%; text-align:center; border-collapse:collapse; font-size:15px; margin: 0;" dir="rtl">
+                        <thead>
+                            <tr style="background: #f8fafc; border-bottom: 1px solid var(--border-color);">
+                                <th style="padding:14px; color:var(--text-main); font-weight:800; width: 50%;">الحالة</th>
+                                <th style="padding:14px; color:var(--text-main); font-weight:800; width: 50%;">العدد</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding:14px; color:#10b981; font-weight:bold; background:#f0fdf4;">حاضر</td>
+                                <td style="padding:14px; font-weight:bold; font-size:18px; color:#10b981; background:#f0fdf4;">${p}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding:14px; color:#f43f5e; font-weight:bold; background:#fff1f2;">غائب</td>
+                                <td style="padding:14px; font-weight:bold; font-size:18px; color:#f43f5e; background:#fff1f2;">${a}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding:14px; color:#0ea5e9; font-weight:bold; background:#f0f9ff;">بعذر</td>
+                                <td style="padding:14px; font-weight:bold; font-size:18px; color:#0ea5e9; background:#f0f9ff;">${e}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding:14px; color:#f59e0b; font-weight:bold; background:#fffbeb;">متأخر</td>
+                                <td style="padding:14px; font-weight:bold; font-size:18px; color:#f59e0b; background:#fffbeb;">${l}</td>
+                            </tr>
+                            <tr style="background:#f1f5f9;">
+                                <td style="padding:14px; font-weight:800; color:var(--text-main);">إجمالي الطلاب</td>
+                                <td style="padding:14px; font-weight:800; font-size:20px; color:var(--primary);">${t}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>`; 
+                m.classList.add('active'); 
+            } 
+        };
+        
+        window.exportTodayWordReport = () => { 
+            const t=window.students.length, p=window.students.filter(s=>s.status==='present').length, a=window.students.filter(s=>s.status==='absent').length, l=window.students.filter(s=>s.status==='late').length, e=window.students.filter(s=>s.status==='excused').length; 
+            const d=new Date().toLocaleDateString('ar-SA'); 
+            const c=`<h1 style="color:#4f46e5; font-family:'Tajawal', sans-serif;">تقرير الإحصائية اليومية</h1>
+            <p style="text-align:center; font-size: 14pt; color: #64748b; font-family:'Tajawal', sans-serif;">التاريخ: ${d}</p>
+            <table style="width: 90%; margin: 0 auto; border: 1px solid #cbd5e1; border-collapse: collapse; font-family:'Tajawal', sans-serif;">
+                <tr style="background:#f8fafc;"><th style="color:#1e293b; padding:12px; border: 1px solid #cbd5e1;">الحالة</th><th style="color:#1e293b; padding:12px; border: 1px solid #cbd5e1;">العدد</th></tr>
+                <tr><td style="color:#10b981; font-weight:bold; background:#ecfdf5; padding:12px; border: 1px solid #cbd5e1;">حاضر</td><td style="font-weight:bold; color:#10b981; background:#ecfdf5; padding:12px; border: 1px solid #cbd5e1;">${p}</td></tr>
+                <tr><td style="color:#f43f5e; font-weight:bold; background:#fff1f2; padding:12px; border: 1px solid #cbd5e1;">غائب</td><td style="font-weight:bold; color:#f43f5e; background:#fff1f2; padding:12px; border: 1px solid #cbd5e1;">${a}</td></tr>
+                <tr><td style="color:#0ea5e9; font-weight:bold; background:#e0f2fe; padding:12px; border: 1px solid #cbd5e1;">بعذر</td><td style="font-weight:bold; color:#0ea5e9; background:#e0f2fe; padding:12px; border: 1px solid #cbd5e1;">${e}</td></tr>
+                <tr><td style="color:#f59e0b; font-weight:bold; background:#fffbeb; padding:12px; border: 1px solid #cbd5e1;">متأخر</td><td style="font-weight:bold; color:#f59e0b; background:#fffbeb; padding:12px; border: 1px solid #cbd5e1;">${l}</td></tr>
+                <tr><td style="font-weight:bold; background:#f1f5f9; color:#1e293b; padding:12px; border: 1px solid #cbd5e1;">إجمالي الطلاب</td><td style="font-weight:bold; background:#f1f5f9; color:#1e293b; padding:12px; border: 1px solid #cbd5e1;">${t}</td></tr>
+            </table>`; 
+            const w=getWordWrapper('تقرير اليوم',c); const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const lk=document.createElement('a'); lk.href=u; lk.download='تقرير_إحصائية_اليوم.doc'; lk.click(); window.closeModals(); 
+        };
 
         window.openDateModal = () => document.getElementById('dateModal').classList.add('active');
-        window.generateDateRangeReport = () => { const f=document.getElementById('fromDate').value, t=document.getElementById('toDate').value, c=document.getElementById('rangeClassFilter').value; if(!f||!t)return window.showCustomAlert('الرجاء تحديد تاريخ البداية والنهاية أولاً.'); const hs=JSON.parse(localStorage.getItem(window.HISTORY_KEY))||{}; const vd=Object.keys(hs).filter(d=>{const dt=new Date(d);return dt>=new Date(f)&&dt<=new Date(t);}); if(vd.length===0)return window.showCustomAlert('لا توجد أي سجلات محفوظة في هذه الفترة الزمنية.'); let pr=0,ab=0,la=0,ex=0,tr=0; vd.forEach(d=>{ hs[d].forEach(s=>{ if(c!=='all'&&s.class!==c)return; if(s.status==='none')return; tr++; if(s.status==='present')pr++; else if(s.status==='late')la++; else if(s.status==='excused')ex++; else if(s.status==='absent')ab++; }); }); const pPct=tr?((pr/tr)*100).toFixed(1):0, aPct=tr?((ab/tr)*100).toFixed(1):0, lPct=tr?((la/tr)*100).toFixed(1):0, ePct=tr?((ex/tr)*100).toFixed(1):0; document.getElementById('dateRangeReportContent').innerHTML=`<table style="width:100%;text-align:center;border-collapse:collapse;" dir="rtl"><thead><tr style="background:#f1f5f9;"><th style="padding:10px;border:1px solid #e2e8f0;">الحالة</th><th style="padding:10px;border:1px solid #e2e8f0;">إجمالي السجلات</th><th style="padding:10px;border:1px solid #e2e8f0;">النسبة</th></tr></thead><tbody><tr><td style="padding:10px;border:1px solid #e2e8f0;color:#10b981;font-weight:bold;">حضور</td><td style="padding:10px;border:1px solid #e2e8f0; font-weight:bold;">${pr}</td><td style="padding:10px;border:1px solid #e2e8f0;">${pPct}%</td></tr><tr><td style="padding:10px;border:1px solid #e2e8f0;color:#f43f5e;font-weight:bold;">غياب</td><td style="padding:10px;border:1px solid #e2e8f0; font-weight:bold;">${ab}</td><td style="padding:10px;border:1px solid #e2e8f0;">${aPct}%</td></tr><tr><td style="padding:10px;border:1px solid #e2e8f0;color:#0ea5e9;font-weight:bold;">بعذر</td><td style="padding:10px;border:1px solid #e2e8f0; font-weight:bold;">${ex}</td><td style="padding:10px;border:1px solid #e2e8f0;">${ePct}%</td></tr><tr><td style="padding:10px;border:1px solid #e2e8f0;color:#f59e0b;font-weight:bold;">تأخر</td><td style="padding:10px;border:1px solid #e2e8f0; font-weight:bold;">${la}</td><td style="padding:10px;border:1px solid #e2e8f0;">${lPct}%</td></tr></tbody></table>`; window.showEl('dateRangeReportContainer'); };
-        window.exportDateRangeToWord = () => { const c=document.getElementById('dateRangeReportContent').innerHTML; const w=getWordWrapper('تقرير فترة',`<h1>تقرير غياب لفترة</h1>${c}`); const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download='تقرير_فترة.doc'; l.click(); };
+        window.generateDateRangeReport = () => { 
+            const f=document.getElementById('fromDate').value, t=document.getElementById('toDate').value, c=document.getElementById('rangeClassFilter').value; 
+            if(!f||!t)return window.showCustomAlert('الرجاء تحديد تاريخ البداية والنهاية أولاً.'); 
+            const hs=JSON.parse(localStorage.getItem(window.HISTORY_KEY))||{}; 
+            const vd=Object.keys(hs).filter(d=>{const dt=new Date(d);return dt>=new Date(f)&&dt<=new Date(t);}); 
+            if(vd.length===0)return window.showCustomAlert('لا توجد أي سجلات محفوظة في هذه الفترة الزمنية.'); 
+            let pr=0,ab=0,la=0,ex=0,tr=0; 
+            vd.forEach(d=>{ hs[d].forEach(s=>{ if(c!=='all'&&s.class!==c)return; if(s.status==='none')return; tr++; if(s.status==='present')pr++; else if(s.status==='late')la++; else if(s.status==='excused')ex++; else if(s.status==='absent')ab++; }); }); 
+            const pPct=tr?((pr/tr)*100).toFixed(1):0, aPct=tr?((ab/tr)*100).toFixed(1):0, lPct=tr?((la/tr)*100).toFixed(1):0, ePct=tr?((ex/tr)*100).toFixed(1):0; 
+            
+            document.getElementById('dateRangeReportContent').innerHTML=`
+            <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden;">
+                <table style="width:100%; text-align:center; border-collapse:collapse; font-size:14px; margin: 0;" dir="rtl">
+                    <thead>
+                        <tr style="background: #f8fafc; border-bottom: 1px solid var(--border-color);">
+                            <th style="padding:12px 5px; color:var(--text-main); font-weight:800; width: 33%;">الحالة</th>
+                            <th style="padding:12px 5px; color:var(--text-main); font-weight:800; width: 33%;">إجمالي السجلات</th>
+                            <th style="padding:12px 5px; color:var(--text-main); font-weight:800; width: 33%;">النسبة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding:12px 5px; color:#10b981; font-weight:bold; background:#f0fdf4;">حضور</td>
+                            <td style="padding:12px 5px; font-weight:bold; font-size:16px; color:#10b981; background:#f0fdf4;">${pr}</td>
+                            <td style="padding:12px 5px; font-weight:bold; color:#10b981; background:#f0fdf4;">${pPct}%</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding:12px 5px; color:#f43f5e; font-weight:bold; background:#fff1f2;">غياب</td>
+                            <td style="padding:12px 5px; font-weight:bold; font-size:16px; color:#f43f5e; background:#fff1f2;">${ab}</td>
+                            <td style="padding:12px 5px; font-weight:bold; color:#f43f5e; background:#fff1f2;">${aPct}%</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding:12px 5px; color:#0ea5e9; font-weight:bold; background:#f0f9ff;">بعذر</td>
+                            <td style="padding:12px 5px; font-weight:bold; font-size:16px; color:#0ea5e9; background:#f0f9ff;">${ex}</td>
+                            <td style="padding:12px 5px; font-weight:bold; color:#0ea5e9; background:#f0f9ff;">${ePct}%</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:12px 5px; color:#f59e0b; font-weight:bold; background:#fffbeb;">تأخر</td>
+                            <td style="padding:12px 5px; font-weight:bold; font-size:16px; color:#f59e0b; background:#fffbeb;">${la}</td>
+                            <td style="padding:12px 5px; font-weight:bold; color:#f59e0b; background:#fffbeb;">${lPct}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>`; 
+            window.showEl('dateRangeReportContainer'); 
+            
+            window.tempDateRangeData = { f, t, pr, pPct, ab, aPct, ex, ePct, la, lPct };
+        };
+        
+        window.exportDateRangeToWord = () => { 
+            if(!window.tempDateRangeData) return;
+            const { f, t, pr, pPct, ab, aPct, ex, ePct, la, lPct } = window.tempDateRangeData;
+            const c=`
+            <p style="text-align:center; font-size: 14pt; color: #64748b; font-family:'Tajawal', sans-serif;">من تاريخ: ${f} | إلى تاريخ: ${t}</p>
+            <table style="width:100%;text-align:center;border-collapse:collapse;font-size:14pt;font-family:'Tajawal',sans-serif;" dir="rtl">
+                <thead><tr><th style="padding:12px;background:#f8fafc;color:#1e293b;border:1px solid #cbd5e1;">الحالة</th><th style="padding:12px;background:#f8fafc;color:#1e293b;border:1px solid #cbd5e1;">العدد</th><th style="padding:12px;background:#f8fafc;color:#1e293b;border:1px solid #cbd5e1;">النسبة</th></tr></thead>
+                <tbody>
+                    <tr><td style="padding:12px;color:#10b981;font-weight:bold;background:#ecfdf5;border:1px solid #cbd5e1;">حضور</td><td style="padding:12px;font-weight:bold;color:#10b981;background:#ecfdf5;border:1px solid #cbd5e1;">${pr}</td><td style="padding:12px;font-weight:bold;color:#10b981;background:#ecfdf5;border:1px solid #cbd5e1;">${pPct}%</td></tr>
+                    <tr><td style="padding:12px;color:#f43f5e;font-weight:bold;background:#fff1f2;border:1px solid #cbd5e1;">غياب</td><td style="padding:12px;font-weight:bold;color:#f43f5e;background:#fff1f2;border:1px solid #cbd5e1;">${ab}</td><td style="padding:12px;font-weight:bold;color:#f43f5e;background:#fff1f2;border:1px solid #cbd5e1;">${aPct}%</td></tr>
+                    <tr><td style="padding:12px;color:#0ea5e9;font-weight:bold;background:#e0f2fe;border:1px solid #cbd5e1;">بعذر</td><td style="padding:12px;font-weight:bold;color:#0ea5e9;background:#e0f2fe;border:1px solid #cbd5e1;">${ex}</td><td style="padding:12px;font-weight:bold;color:#0ea5e9;background:#e0f2fe;border:1px solid #cbd5e1;">${ePct}%</td></tr>
+                    <tr><td style="padding:12px;color:#f59e0b;font-weight:bold;background:#fffbeb;border:1px solid #cbd5e1;">تأخر</td><td style="padding:12px;font-weight:bold;color:#f59e0b;background:#fffbeb;border:1px solid #cbd5e1;">${la}</td><td style="padding:12px;font-weight:bold;color:#f59e0b;background:#fffbeb;border:1px solid #cbd5e1;">${lPct}%</td></tr>
+                </tbody>
+            </table>`; 
+            const w=getWordWrapper('تقرير فترة',`<h1 style="color:#4f46e5; font-family:'Tajawal', sans-serif;">تقرير غياب وحضور لفترة محددة</h1>${c}`); 
+            const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download='تقرير_فترة_محددة.doc'; l.click(); 
+            window.closeModals();
+        };
 
         window.openPdfPrintModal = () => { document.getElementById('pdfPrintModal').classList.add('active'); }; 
-        
-        window.executePdfDownload = () => { const btn=document.getElementById('pdfDownloadBtn'); const orig=btn.innerHTML; btn.innerHTML='⏳ جاري التحميل...'; btn.disabled=true; const div=document.createElement('div'); div.innerHTML=window.getGeneralReportHTML(); html2pdf().set({margin:[10,10,10,10],filename:'تقرير_الحضور_الشامل.pdf',html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'}}).from(div).save().then(()=>{btn.innerHTML=orig;btn.disabled=false;window.closeModals();}); };
-        window.exportGeneralReportToWord = () => { const d=new Date().toLocaleDateString('ar-SA'); let rows=''; window.filteredStudents.forEach((s,i)=>{ let c='#475569',t='-'; if(s.status==='present'){c='#10b981';t='حاضر';}else if(s.status==='absent'){c='#f43f5e';t='غائب';}else if(s.status==='late'){c='#f59e0b';t='متأخر';}else if(s.status==='excused'){c='#0ea5e9';t='بعذر';} rows+=`<tr><td>${i+1}</td><td style="font-weight:bold;">${s.name}</td><td dir="ltr">${s.phone}</td><td>${s.class}</td><td style="color:${c};font-weight:bold;">${t}</td><td dir="ltr">${s.time}</td></tr>`; }); const c=`<h1>التقرير الشامل للحضور والغياب</h1><p style="text-align:left;">التاريخ: ${d}</p><table><tr style="background:#f1f5f9;"><th>م</th><th>اسم الطالب</th><th>رقم الجوال</th><th>الصف الدراسي</th><th>حالة اليوم</th><th>وقت الرصد</th></tr>${rows}</table>`; const w=getWordWrapper('التقرير الشامل',c); const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download='التقرير_الشامل.doc'; l.click(); window.closeModals(); };
+        window.exportGeneralReportToWord = () => { 
+            const d=new Date().toLocaleDateString('ar-SA'); let rows=''; 
+            window.filteredStudents.forEach((s,i)=>{ 
+                let c='#475569',t='-'; 
+                if(s.status==='present'){c='#10b981';t='حاضر';}else if(s.status==='absent'){c='#f43f5e';t='غائب';}else if(s.status==='late'){c='#f59e0b';t='متأخر';}else if(s.status==='excused'){c='#0ea5e9';t='بعذر';} 
+                rows+=`<tr><td style="border: 1px solid #cbd5e1; padding: 10px;">${i+1}</td><td style="font-weight:bold; border: 1px solid #cbd5e1; padding: 10px;">${s.name}</td><td dir="ltr" style="border: 1px solid #cbd5e1; padding: 10px;">${s.phone}</td><td style="border: 1px solid #cbd5e1; padding: 10px;">${s.class}</td><td style="color:${c};font-weight:bold; border: 1px solid #cbd5e1; padding: 10px;">${t}</td><td dir="ltr" style="border: 1px solid #cbd5e1; padding: 10px;">${s.time}</td></tr>`; 
+            }); 
+            const c=`<h1 style="color:#4f46e5; font-family:'Tajawal', sans-serif;">التقرير الشامل للحضور والغياب</h1><p style="text-align:center; font-size:14pt; color:#64748b; font-family:'Tajawal', sans-serif;">التاريخ: ${d}</p><table style="width:100%; border-collapse:collapse; text-align:center; font-family:'Tajawal', sans-serif;"><tr style="background:#f1f5f9;"><th style="border: 1px solid #cbd5e1; padding: 10px;">م</th><th style="border: 1px solid #cbd5e1; padding: 10px;">اسم الطالب</th><th style="border: 1px solid #cbd5e1; padding: 10px;">رقم الجوال</th><th style="border: 1px solid #cbd5e1; padding: 10px;">الصف الدراسي</th><th style="border: 1px solid #cbd5e1; padding: 10px;">حالة اليوم</th><th style="border: 1px solid #cbd5e1; padding: 10px;">وقت الرصد</th></tr>${rows}</table>`; 
+            const w=getWordWrapper('التقرير الشامل',c); const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download='التقرير_الشامل.doc'; l.click(); window.closeModals(); 
+        };
         window.executeDirectPrint = () => { window.closeModals(); const p=document.getElementById('printArea'); p.innerHTML=window.getGeneralReportHTML(); document.body.classList.add('printing-card'); setTimeout(()=>{window.print(); document.body.classList.remove('printing-card'); p.innerHTML='';},300); };
         window.getGeneralReportHTML = () => { const d=new Date().toLocaleDateString('ar-SA'); let rows=''; window.filteredStudents.forEach((s,i)=>{ let c='#64748b',t='لم يسجل'; if(s.status==='present'){c='#10b981';t='حاضر';}else if(s.status==='absent'){c='#ef4444';t='غائب';}else if(s.status==='late'){c='#f59e0b';t='متأخر';}else if(s.status==='excused'){c='#0ea5e9';t='بعذر';} rows+=`<tr><td style="padding:10px;border:1px solid #e2e8f0;">${i+1}</td><td style="padding:10px;border:1px solid #e2e8f0;font-weight:bold;text-align:right;">${s.name}</td><td style="padding:10px;border:1px solid #e2e8f0;" dir="ltr">${s.phone}</td><td style="padding:10px;border:1px solid #e2e8f0;">${s.class}</td><td style="padding:10px;border:1px solid #e2e8f0;color:${c};font-weight:bold;">${t}</td><td style="padding:10px;border:1px solid #e2e8f0;" dir="ltr">${s.time}</td></tr>`; }); return `<div style="direction:rtl;font-family:sans-serif;padding:20px;"><h2 style="text-align:center;color:#4f46e5;border-bottom:2px solid #6366f1;padding-bottom:10px;margin-bottom:20px;">تقرير الحضور والغياب اليومي للمدرسة (${d})</h2><table style="width:100%;border-collapse:collapse;text-align:center;font-size:14px;"><thead><tr style="background:#f1f5f9;"><th style="padding:12px;border:1px solid #e2e8f0;">م</th><th style="padding:12px;border:1px solid #e2e8f0;">الاسم الرباعي</th><th style="padding:12px;border:1px solid #e2e8f0;">رقم الجوال</th><th style="padding:12px;border:1px solid #e2e8f0;">الصف</th><th style="padding:12px;border:1px solid #e2e8f0;">الحالة</th><th style="padding:12px;border:1px solid #e2e8f0;">وقت الرصد</th></tr></thead><tbody>${rows}</tbody></table></div>`; };
 
@@ -1137,36 +1396,81 @@
                 } 
             } 
         };
+        
         window.captureStudentReport = () => { const a=document.getElementById('reportCaptureArea'); const b=document.getElementById('captureStudentReportBtn'); const o=b.innerHTML; b.innerHTML='⏳ جاري الالتقاط...'; html2canvas(a,{scale:2,useCORS:true,backgroundColor:'#ffffff'}).then(c=>{ const l=document.createElement('a'); l.download='اشعار_الطالب.png'; l.href=c.toDataURL(); l.click(); b.innerHTML=o; window.showCustomAlert('تم حفظ صورة التقرير في جهازك بنجاح! 📸'); }); };
         window.draftParentMessage = () => { const s=document.getElementById('sr-name').innerText, st=document.getElementById('sr-status')?.innerText||'غائب', a=document.getElementById('sr-absences').innerText; window.showEl('aiLoadingIndicator'); window.hideEl('aiMessageResult'); const p=`أنت موجه طلابي. صغ رسالة واتساب قصيرة وودودة جداً لولي أمر الطالب "${s}" لإخباره أن ابنه مُسجل كـ "${st}" اليوم وأن إجمالي غيابه التراكمي أصبح ${a}.`; window.fetchGeminiWithBackoff(p).then(t=>{window.hideEl('aiLoadingIndicator');window.showEl('aiMessageResult');window.setTxt('aiMessageText',t);}); };
         window.copyAiMessage = () => { const t=document.createElement('textarea'); t.value=document.getElementById('aiMessageText').innerText; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); window.showCustomAlert('تم نسخ نص الرسالة بنجاح! جاهزة للإرسال.'); };
 
         window.openRiskModal = () => { const hs=JSON.parse(localStorage.getItem(window.HISTORY_KEY))||{}; const sts={}; window.students.forEach(s=>sts[s.id]={n:s.name,c:s.class,a:0,l:0,b:s.behaviorIssues||0}); Object.values(hs).forEach(day=>day.forEach(s=>{if(sts[s.id]){if(s.status==='absent')sts[s.id].a++;if(s.status==='late')sts[s.id].l++;}})); const arr=Object.values(sts); const ta=arr.filter(s=>s.a>2).sort((a,b)=>b.a-a.a); const tl=arr.filter(s=>s.l>2).sort((a,b)=>b.l-a.l); let h=''; const bt=(tit,d,k,col)=>{ if(!d.length)return''; let tr=''; d.forEach(s=>tr+=`<tr><td style="padding:10px;border:1px solid #e2e8f0; font-weight:bold;">${s.n}</td><td style="padding:10px;border:1px solid #e2e8f0;color:${col};font-weight:900; font-size:16px;">${s[k]}</td></tr>`); return `<h4 style="color:${col};margin-top:20px; font-weight:800;">${tit}</h4><table style="width:100%;text-align:center;border-collapse:collapse; margin-top:10px;"><thead><tr style="background:#f1f5f9;"><th style="padding:10px;border:1px solid #e2e8f0;">اسم الطالب المنذر</th><th style="padding:10px;border:1px solid #e2e8f0;">العدد المسجل</th></tr></thead><tbody>${tr}</tbody></table>`; }; h+=bt('🔴 الإنذار الأول لكثرة الغياب (3 أيام فأكثر)',ta,'a','#e11d48'); h+=bt('🟠 تنبيه كثرة التأخر الصباحي (3 أيام فأكثر)',tl,'l','#d97706'); document.getElementById('riskContent').innerHTML=h||'<div style="text-align:center; padding:40px; color:#10b981; background:#ecfdf5; border-radius:12px; font-weight:bold; font-size:16px; border:2px dashed #a7f3d0;">لا يوجد أي طلاب منذرين! مؤشر الانضباط العام ممتاز جداً! 🎉</div>'; document.getElementById('riskModal').classList.add('active'); };
         window.generateRiskActionPlan = () => { window.showEl('riskAiLoading'); window.hideEl('riskAiResult'); window.fetchGeminiWithBackoff('أنت موجه طلابي خبير. اكتب خطة تدخل إرشادية سريعة ومختصرة في 3 نقاط محددة (تربوية وعملية) للتعامل مع الطلاب الذين تجاوز غيابهم أو تأخرهم 3 أيام متتالية، وكيف نشرك ولي الأمر بالخطة.').then(t=>{window.hideEl('riskAiLoading');window.showEl('riskAiResult');document.getElementById('riskAiResult').innerHTML=window.formatMarkdown(t);}); };
-        window.exportRiskReportToWord = () => { const c=document.getElementById('riskContent').innerHTML; const w=getWordWrapper('المنذرين',`<h1>تقرير الطلاب المنذرين إرشادياً</h1>${c}`); const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download='تقرير_المنذرين.doc'; l.click(); };
+        
+        window.exportRiskReportToWord = () => { 
+            const c=document.getElementById('riskContent').innerHTML; 
+            // Add styling for word
+            const formattedContent = c.replace(/<table/g, '<table style="width:100%; border-collapse:collapse; margin-top:15px; font-family:\'Tajawal\', sans-serif;" border="1"').replace(/<th/g, '<th style="padding:12px; background:#f8fafc; color:#1e293b;"').replace(/<td/g, '<td style="padding:12px;"');
+            const w=getWordWrapper('المنذرين',`<h1 style="color:#e11d48; font-family:'Tajawal', sans-serif;">تقرير الطلاب المنذرين إرشادياً</h1>${formattedContent}`); 
+            const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download='تقرير_المنذرين.doc'; l.click(); 
+        };
 
         window.openBehaviorModal = () => { const c=document.getElementById('behaviorClassSelect'); c.innerHTML='<option value="">-- اختر الفصل --</option>'; [...new Set(window.students.map(s=>s.class))].sort().forEach(cl=>c.innerHTML+=`<option value="${cl}">${cl}</option>`); document.getElementById('behaviorModal').classList.add('active'); };
         window.populateBehaviorStudents = () => { const c=document.getElementById('behaviorClassSelect').value; const s=document.getElementById('behaviorStudentSelect'); s.innerHTML='<option value="">-- اختر الطالب المعني --</option>'; window.students.filter(x=>x.class===c).forEach(x=>s.innerHTML+=`<option value="${x.id}">${x.name}</option>`); };
         window.analyzeBehavior = () => { const sid=document.getElementById('behaviorStudentSelect').value; const desc=document.getElementById('behaviorDescription').value; if(!sid||!desc)return window.showCustomAlert('الرجاء تحديد الطالب المعني وكتابة وصف المشكلة أولاً.'); window.showEl('behaviorLoading'); window.hideEl('behaviorResultContainer'); window.fetchGeminiWithBackoff(`أنت لجنة التوجيه الطلابي في مدرسة سعودية. قم بتصنيف هذه المشكلة السلوكية واقترح الإجراء النظامي التربوي السليم والمباشر بناءً على دليل السلوك والمواظبة: "${desc}"`).then(t=>{window.hideEl('behaviorLoading');window.showEl('behaviorResultContainer');document.getElementById('behaviorResult').innerHTML=window.formatMarkdown(t);}); };
-        window.exportBehaviorToWord = () => { const r=document.getElementById('behaviorResult').innerHTML; const w=getWordWrapper('محضر مشكلة سلوكية',`<h1>محضر دراسة مشكلة سلوكية</h1><div style="background:#fffbeb; padding:15px; border:1px solid #fcd34d;">${r}</div>`); const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download='محضر_سلوكي.doc'; l.click(); };
+        window.exportBehaviorToWord = () => { 
+            const r=document.getElementById('behaviorResult').innerHTML; 
+            const w=getWordWrapper('محضر مشكلة سلوكية',`<h1 style="color:#d97706; font-family:'Tajawal', sans-serif;">محضر دراسة مشكلة سلوكية</h1><div style="background:#fffbeb; padding:20px; border:2px solid #fcd34d; border-radius:10px; text-align:right; font-family:'Tajawal', sans-serif; font-size:14pt; line-height:1.8;">${r}</div>`); 
+            const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download='محضر_سلوكي.doc'; l.click(); 
+        };
 
-        window.checkAndAlertForExcuses = s => { const hs=JSON.parse(localStorage.getItem(window.HISTORY_KEY))||{}; const ex=JSON.parse(localStorage.getItem(window.EXCUSES_KEY))||[]; let alertDays=0; Object.keys(hs).forEach(d=>{ const r=hs[d].find(x=>x.id===s.id); if(r&&r.status==='absent'&&!ex.some(e=>e.studentId===s.id&&e.date===d)) alertDays++; }); setTimeout(()=>{ if(alertDays>0) window.showCustomAlert(`تنبيه هام: لديك ${alertDays} يوم غياب لم ترفع لها مبرراً. يرجى المبادرة برفع مبرر غيابك لتلافي الحسم من درجات المواظبة.`); let upd=false; ex.filter(e=>e.studentId===s.id).forEach(e=>{ if((e.status==='accepted'||e.status==='rejected')&&!e.notified){ window.showCustomAlert(e.status==='accepted'?`إشعار إدارة المدرسة: تم قبول عذرك ليوم ${e.date} بنجاح ✅`:`إشعار إدارة المدرسة: نعتذر، تم رفض عذرك ليوم ${e.date} ❌. يمكنك مراجعة المدرسة أو إعادة التقديم من سجل الحضور.`); e.notified=true; upd=true; } }); if(upd) localStorage.setItem(window.EXCUSES_KEY,JSON.stringify(ex)); const td=window.getTodayString(); if(hs[td]){ const tr=hs[td].find(x=>x.id===s.id); if(tr&&tr.status==='late') window.showCustomAlert('عزيزي الطالب، تم رصد تأخرك الصباحي لهذا اليوم. نأمل منك الحرص التام على الحضور المبكر دعماً لمسيرتك التعليمية ⏱️'); } },800); };
-
-        // ==========================================
-        // تحديث البادج الخاص بالأعذار
-        // ==========================================
-        window.updateExcuseBadge = () => {
-            const ex = JSON.parse(localStorage.getItem(window.EXCUSES_KEY)) || [];
-            const pendingCount = ex.filter(e => e.status === 'pending').length;
-            const badge = document.getElementById('pendingExcusesBadge');
-            if(badge) {
-                if(pendingCount > 0) {
-                    badge.innerText = pendingCount;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
+        window.checkAndAlertForExcuses = s => { 
+            if (!window.sessionAlerts) window.sessionAlerts = {};
+            if (window.sessionAlerts[s.id]) return; // منع تكرار ظهور التنبيهات في نفس الجلسة
+            
+            const hs=JSON.parse(localStorage.getItem(window.HISTORY_KEY))||{}; 
+            const ex=JSON.parse(localStorage.getItem(window.EXCUSES_KEY))||[]; 
+            const td=window.getTodayString(); 
+            const alertAbsentKey = `alerted_absent_${s.id}_${td}`; 
+            const alertLateKey = `alerted_late_${s.id}_${td}`; 
+            
+            let alertDays=0; 
+            Object.keys(hs).forEach(d=>{ 
+                const r=hs[d].find(x=>x.id===s.id); 
+                if(r&&r.status==='absent'&&!ex.some(e=>e.studentId===s.id&&e.date===d)) alertDays++; 
+            }); 
+            
+            setTimeout(()=>{ 
+                let msgs = [];
+                
+                if(alertDays>0 && !localStorage.getItem(alertAbsentKey)) { 
+                    msgs.push(`تنبيه هام: لديك ${alertDays} يوم غياب لم ترفع لها مبرراً. يرجى المبادرة برفع مبرر غيابك لتلافي الحسم من درجات المواظبة.`); 
+                    localStorage.setItem(alertAbsentKey, 'true');
+                } 
+                
+                let upd=false; 
+                ex.filter(e=>e.studentId===s.id).forEach(e=>{ 
+                    if((e.status==='accepted'||e.status==='rejected')&&!e.notified){ 
+                        msgs.push(e.status==='accepted'?`إشعار إدارة المدرسة: تم قبول عذرك ليوم ${e.date} بنجاح ✅`:`إشعار إدارة المدرسة: نعتذر، تم رفض عذرك ليوم ${e.date} ❌. يمكنك مراجعة المدرسة أو إعادة التقديم من سجل الحضور.`); 
+                        e.notified=true; 
+                        upd=true; 
+                        if(window.db && window.currentUser) {
+                            setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'excuses', e.id), { notified: true }, { merge: true });
+                        }
+                    } 
+                }); 
+                if(upd) localStorage.setItem(window.EXCUSES_KEY,JSON.stringify(ex)); 
+                
+                if(hs[td]){ 
+                    const tr=hs[td].find(x=>x.id===s.id); 
+                    if(tr&&tr.status==='late' && !localStorage.getItem(alertLateKey)) { 
+                        msgs.push('عزيزي الطالب، تم رصد تأخرك الصباحي لهذا اليوم. نأمل منك الحرص التام على الحضور المبكر دعماً لمسيرتك التعليمية ⏱️'); 
+                        localStorage.setItem(alertLateKey, 'true');
+                    } 
+                } 
+                
+                if(msgs.length > 0) {
+                    window.showCustomAlert(msgs.join('<br><br><hr style="border:0; border-top:1px solid #e2e8f0; margin:15px 0;">'));
+                    window.sessionAlerts[s.id] = true; // تسجيل أنه تم عرض الرسالة في هذه الجلسة للطالب
                 }
-            }
+            },800); 
         };
 
         document.addEventListener('DOMContentLoaded', window.initApp);
