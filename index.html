@@ -395,25 +395,37 @@ signInAnonymously(auth).catch((error) => {
 onAuthStateChanged(auth, (user) => {
   if (user) {
     window.currentUser = user;
-    window.setupCloudListener();
-    console.log("✅ متصل بـ Firebase");
-  }
-});
-
-const getWordWrapper = (title, content) => `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40' dir='rtl'><head><meta charset='utf-8'><title>${title}</title><style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap'); body, table, th, td, p, h1, h2, h3, h4, div, span { font-family: 'Tajawal', 'Arial', sans-serif !important; } body { direction: rtl; text-align: right; color: #000; } .header-text { text-align: right; font-size: 14pt; font-weight: bold; line-height: 1.6; margin-bottom: 30px; } table { border-collapse: collapse; width: 100%; margin-top: 20px; border: 1px solid #cbd5e1; } th, td { border: 1px solid #cbd5e1; padding: 12px; text-align: center; font-size: 13pt; } th { background-color: #4f46e5; color: white; font-weight: bold; } h1 { color: #4f46e5; font-size: 22pt; text-decoration: underline; margin-bottom: 10px; text-align: center; } h4 { font-size: 16pt; color: #1e293b; text-align: center; }</style></head><body><div class="header-text">المملكة العربية السعودية<br>وزارة التعليم<br>الإدارة العامة للتعليم بمحافظة الأحساء<br>مدرسة الجشة المتوسطة</div>${content}<br><br><br><br><table style="width: 100%; border: none; margin-top: 50px;"><tr style="border: none;"><td style="border: none; text-align: right; font-weight: bold; width: 50%; font-size: 16pt;">الموجه الطلابي:<br><br>عبدالهادي بن محمد المحسن<br><br>التوقيع: .......................</td><td style="border: none; text-align: left; font-weight: bold; width: 50%; font-size: 16pt;">مدير المدرسة:<br><br><br><br>التوقيع: .......................</td></tr></table></body></html>`;
 window.setupCloudListener = () => { 
   if (!window.db || !window.currentUser) return; 
   const syncStatus = document.getElementById('cloudSyncStatus');
   if(syncStatus) { syncStatus.style.backgroundColor = '#10b981'; syncStatus.title = '✅ المزامنة متصلة'; }
   
+  // الاستماع للبيانات لحظة بلحظة
   onSnapshot(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'shared_attendance', 'live_state'), (docSnap) => { 
     if (docSnap.exists()) { 
       const data = docSnap.data(); 
       if(data.students && data.students.length > 0) { 
+        // 1. تحديث القائمة الرئيسية
         window.isRemoteUpdate = true; 
         window.students = data.students; 
+        
+        // 2. تحديث التخزين المحلي فوراً لمنع التضارب
+        localStorage.setItem(window.STORAGE_KEY, JSON.stringify(data.students));
+        
+        // 3. حفظ السجل التاريخي لليوم
+        let history = JSON.parse(localStorage.getItem(window.HISTORY_KEY)) || {};
+        history[window.getTodayString()] = JSON.parse(JSON.stringify(data.students));
+        localStorage.setItem(window.HISTORY_KEY, JSON.stringify(history));
+        
+        // 4. إعادة رسم الواجهات (الإدارة والطالب) فوراً!
         window.setupClassFilter(); 
-        window.handleFilter(); 
+        window.handleFilter();
+        
+        //  إصلاح بوابة الطالب: إذا كانت مفتوحة، قم بتحديثها الآن
+        if(document.getElementById('studentPortalView').style.display === 'block') {
+            window.renderCurrentPortalTab();
+        }
+        
         window.isRemoteUpdate = false; 
       } 
     } 
