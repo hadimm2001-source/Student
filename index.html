@@ -871,4 +871,191 @@ if(!aggregated[student.id]) aggregated[student.id] = { name: student.name, class
 if(student.status === 'absent') aggregated[student.id].absent++; else if(student.status === 'late') aggregated[student.id].late++; else if(student.status === 'excused') aggregated[student.id].excused++;
 });
 });
-const pPct = totalRecords === 0 ? 0 : ((present / totalRecords) * 100).toFixed(1); const aPct = totalRecords ===
+const pPct = totalRecords === 0 ? 0 : ((present / totalRecords) * 100).toFixed(1); const aPct = totalRecords === 0 ? 0 : ((absent / totalRecords) * 100).toFixed(1); const lPct = totalRecords === 0 ? 0 : ((late / totalRecords) * 100).toFixed(1); const ePct = totalRecords === 0 ? 0 : ((excused / totalRecords) * 100).toFixed(1);
+let html = `<div style="text-align: center; margin-bottom: 15px;"><h4 style="color: #4f46e5; font-weight: 800; font-size: 16px; margin-bottom: 5px;">الإحصائية الشاملة للفترة المحددة</h4><p style="font-size: 12px; color: #64748b; margin-bottom: 2px;">الفصل: ${selectedClass === 'all' ? 'جميع الفصول' : selectedClass} | من: ${fromStr} | إلى: ${toStr}</p><p style="font-size: 12px; color: #64748b;">أيام الرصد الفعلية: ${validDates.length}</p></div><div style="background: #ffffff; border-radius: 12px; padding: 10px; border: 1px solid #e2e8f0; margin-bottom: 20px; overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 13px; min-width: 400px;" dir="rtl"><thead><tr style="background-color: #f1f5f9;"><th style="padding: 10px; border: 1px solid #e2e8f0; color: #1e293b; font-weight: 800;">الحالة</th><th style="padding: 10px; border: 1px solid #e2e8f0; color: #1e293b; font-weight: 800;">إجمالي السجلات</th><th style="padding: 10px; border: 1px solid #e2e8f0; color: #1e293b; font-weight: 800;">النسبة</th></tr></thead><tbody><tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #10b981; background: #d1fae5;">حضور</td><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold;">${present}</td><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #64748b;">${pPct}%</td></tr><tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #f43f5e; background: #ffe4e6;">غياب (بدون عذر)</td><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold;">${absent}</td><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #64748b;">${aPct}%</td></tr><tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #0ea5e9; background: #e0f2fe;">غياب (بعذر)</td><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold;">${excused}</td><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #64748b;">${ePct}%</td></tr><tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #f59e0b; background: #fef3c7;">تأخر</td><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold;">${late}</td><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #64748b;">${lPct}%</td></tr><tr style="background-color: #f8fafc;"><td style="padding: 10px; font-weight: 800; color: #1e293b; border: 1px solid #e2e8f0;">إجمالي السجلات المرصودة</td><td style="padding: 10px; font-weight: 900; color: #4f46e5; border: 1px solid #e2e8f0; font-size: 15px;" colspan="2">${totalRecords}</td></tr></tbody></table></div>`;
+const reportData = Object.values(aggregated).filter(s => s.absent > 0 || s.late > 0 || s.excused > 0).sort((a, b) => b.absent - a.absent);
+if(reportData.length === 0) { html += `<p style="text-align: center; color: #10b981; font-weight: bold; padding: 15px; background: #d1fae5; border-radius: 8px;">لا يوجد أي حالات غياب أو تأخير مسجلة في هذه الفترة!</p>`; }
+else {
+html += `<h4 style="color: #1e293b; font-weight: 800; font-size: 14px; margin-bottom: 10px;">تفصيل الطلاب (الأكثر غياباً وتأخراً):</h4><div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 13px; min-width: 400px; border: 1px solid #e2e8f0; background: white;" dir="rtl"><tr style="background-color: #f1f5f9; font-weight: bold;"><th style="padding: 8px; border: 1px solid #e2e8f0;">اسم الطالب</th><th style="padding: 8px; border: 1px solid #e2e8f0;">الصف</th><th style="padding: 8px; border: 1px solid #e2e8f0; color: #f43f5e;">غياب</th><th style="padding: 8px; border: 1px solid #e2e8f0; color: #f59e0b;">تأخر</th><th style="padding: 8px; border: 1px solid #e2e8f0; color: #0ea5e9;">بعذر</th></tr>`;
+reportData.forEach(s => { html += `<tr><td style="padding: 8px; text-align: right; font-weight: bold; color: #1e293b; border: 1px solid #e2e8f0;">${s.name}</td><td style="padding: 8px; border: 1px solid #e2e8f0;">${s.class}</td><td style="padding: 8px; color: #f43f5e; font-weight: bold; border: 1px solid #e2e8f0;">${s.absent > 0 ? s.absent : '-'}</td><td style="padding: 8px; color: #f59e0b; font-weight: bold; border: 1px solid #e2e8f0;">${s.late > 0 ? s.late : '-'}</td><td style="padding: 8px; color: #0ea5e9; font-weight: bold; border: 1px solid #e2e8f0;">${s.excused > 0 ? s.excused : '-'}</td></tr>`; });
+html += `</table></div>`;
+}
+document.getElementById('dateRangeReportContent').innerHTML = html; window.showEl('dateRangeReportContainer');
+};
+window.exportDateRangeToWord = () => {
+const content = document.getElementById('dateRangeReportContent').innerHTML; if(!content || content.includes('لا توجد سجلات')) return window.showCustomAlert('لا توجد بيانات لتصديرها.', 'warning');
+const dateStr = new Date().toLocaleDateString('ar-SA');
+const bodyHtml = `<h1>تقرير الإحصائية الدورية للحضور والغياب</h1><p style="text-align: center; font-weight: bold; font-size: 14pt; margin-bottom: 30px;">تاريخ استخراج التقرير: ${dateStr}</p>${content}`;
+const wordHtml = getWordWrapper('تقرير غياب لفترة', bodyHtml);
+const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'تقرير_الإحصائية_الدورية.doc'; document.body.appendChild(link); link.click(); document.body.removeChild(link); window.showCustomAlert('تم تصدير التقرير الدوري بنجاح', 'success');
+};
+window.openPdfPrintModal = () => {
+const m = document.getElementById('pdfPrintModal');
+if(m) {
+let displayStudents = window.filteredStudents.length > 0 ? window.filteredStudents : window.students;
+const total = displayStudents.length;
+const present = displayStudents.filter(s => s.status === 'present').length;
+const absent = displayStudents.filter(s => s.status === 'absent').length;
+const late = displayStudents.filter(s => s.status === 'late').length;
+window.setTxt('pdf-stat-total', total);
+window.setTxt('pdf-stat-present', present);
+window.setTxt('pdf-stat-absent', absent);
+window.setTxt('pdf-stat-late', late);
+m.classList.add('active');
+}
+};
+window.closePdfPrintModal = () => { const m = document.getElementById('pdfPrintModal'); if(m) m.classList.remove('active'); };
+window.executePdfDownload = () => {
+const btn = document.getElementById('pdfDownloadBtn'); let origHtml = ''; if(btn) { origHtml = btn.innerHTML; btn.innerHTML = '⏳ جاري التحميل...'; btn.disabled = true; }
+const printContainer = document.createElement('div'); printContainer.innerHTML = window.getGeneralReportHTML();
+const opt = { margin: [10, 10, 10, 10], filename: 'تقرير_الحضور_والغياب.pdf', image: { type: 'jpeg', quality: 1.0 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } };
+html2pdf().set(opt).from(printContainer).save().then(() => { if(btn) { btn.innerHTML = origHtml; btn.disabled = false; } window.closePdfPrintModal(); }).catch(err => { if(btn) { btn.innerHTML = origHtml; btn.disabled = false; } window.showCustomAlert('حدث خطأ أثناء تصدير PDF.', 'error'); });
+};
+window.exportGeneralReportToWord = () => {
+const total = window.students.length; const present = window.students.filter(s => s.status === 'present').length; const absent = window.students.filter(s => s.status === 'absent').length; const late = window.students.filter(s => s.status === 'late').length; const dateStr = new Date().toLocaleDateString('ar-SA');
+let displayStudents = window.filteredStudents.length > 0 ? window.filteredStudents : window.students; let tableRows = '';
+displayStudents.forEach((student, index) => {
+const studentIdFormatted = 'STU' + String(index + 1).padStart(3, '0'); let statusText = 'لم يسجل'; let statusBg = '#e2e8f0'; let statusColor = '#475569';
+if(student.status === 'present') { statusText = 'حاضر'; statusBg = '#10b981'; statusColor = '#ffffff'; } else if(student.status === 'absent') { statusText = 'غائب'; statusBg = '#ef4444'; statusColor = '#ffffff'; } else if(student.status === 'late') { statusText = 'متأخر'; statusBg = '#f59e0b'; statusColor = '#ffffff'; }
+tableRows += `<tr><td style="padding: 10px 8px; border: 1px solid #cbd5e1; text-align: center;">${index + 1}</td><td style="padding: 10px 8px; border: 1px solid #cbd5e1; text-align: center;">${studentIdFormatted}</td><td style="padding: 10px 8px; border: 1px solid #cbd5e1; text-align: right; font-weight: bold;">${student.name}</td><td style="padding: 10px 8px; border: 1px solid #cbd5e1; text-align: center;" dir="ltr">${student.phone || '-'}</td><td style="padding: 10px 8px; border: 1px solid #cbd5e1; text-align: center;">${student.class}</td><td style="padding: 10px 8px; border: 1px solid #cbd5e1; text-align: center;"><span style="background-color: ${statusBg}; color: ${statusColor}; padding: 4px 12px; border-radius: 20px; font-weight: bold; display: inline-block;">${statusText}</span></td><td style="padding: 10px 8px; border: 1px solid #cbd5e1; text-align: center;" dir="ltr">${student.time === '-' ? '-' : student.time}</td></tr>`;
+});
+const content = `<h1>تقرير الحضور والغياب اليومي</h1><p style="text-align: right; font-weight: bold; margin-bottom: 10px;">التاريخ: ${dateStr}</p><table border="1" cellpadding="8" style="width: 100%; border-collapse: collapse; text-align: center; margin-bottom: 20px;"><tr><td style="background-color: #f8fafc; border: 1px solid #e2e8f0; width: 25%;">إجمالي الطلاب<br><strong style="font-size: 24px; color: #4f46e5;">${total}</strong></td><td style="background-color: #f8fafc; border: 1px solid #e2e8f0; width: 25%;">حاضر<br><strong style="font-size: 24px; color: #10b981;">${present}</strong></td><td style="background-color: #f8fafc; border: 1px solid #e2e8f0; width: 25%;">غائب<br><strong style="font-size: 24px; color: #ef4444;">${absent}</strong></td><td style="background-color: #f8fafc; border: 1px solid #e2e8f0; width: 25%;">متأخر<br><strong style="font-size: 24px; color: #f59e0b;">${late}</strong></td></tr></table><table border="1" cellpadding="8" style="width: 100%; border-collapse: collapse; text-align: center;"><thead><tr style="background-color: #f1f5f9;"><th style="width: 5%;">#</th><th style="width: 15%;">رقم الطالب</th><th style="width: 25%;">اسم الطالب</th><th style="width: 15%;">رقم الجوال</th><th style="width: 15%;">الفصل</th><th style="width: 10%;">الحالة</th><th style="width: 15%;">التوقيت</th></tr></thead><tbody>${tableRows}</tbody></table>`;
+const wordHtml = getWordWrapper('التقرير الشامل', content);
+const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'تقرير_الغياب_والحضور_الشامل.doc'; document.body.appendChild(link); link.click(); document.body.removeChild(link); window.closePdfPrintModal();
+};
+window.executeDirectPrint = () => { window.closePdfPrintModal(); const printArea = document.getElementById('printArea'); if(printArea) { printArea.innerHTML = window.getGeneralReportHTML(); document.body.classList.add('printing-card'); setTimeout(() => { window.print(); setTimeout(() => { document.body.classList.remove('printing-card'); printArea.innerHTML = ''; }, 1000); }, 300); } };
+window.getGeneralReportHTML = () => {
+const total = window.students.length; const present = window.students.filter(s => s.status === 'present').length; const absent = window.students.filter(s => s.status === 'absent').length; const late = window.students.filter(s => s.status === 'late').length;
+let displayStudents = window.filteredStudents.length > 0 ? window.filteredStudents : window.students;
+let tableHtml = `<table style="width: 100%; border-collapse: collapse; text-align: center; margin-top: 20px; font-size: 13px; border: 1px solid #e2e8f0; background: white; font-family: 'Tajawal', 'Arial', sans-serif;" dir="rtl"><thead><tr style="background-color: #f1f5f9; color: #1e293b; font-weight: bold; border-bottom: 2px solid #cbd5e1;"><th style="padding: 12px 8px; border: 1px solid #e2e8f0; width: 5%;">#</th><th style="padding: 12px 8px; border: 1px solid #e2e8f0; width: 15%;">رقم الطالب</th><th style="padding: 12px 8px; border: 1px solid #e2e8f0; width: 25%;">اسم الطالب</th><th style="padding: 12px 8px; border: 1px solid #e2e8f0; width: 15%;">رقم الجوال</th><th style="padding: 12px 8px; border: 1px solid #e2e8f0; width: 15%;">الفصل</th><th style="padding: 12px 8px; border: 1px solid #e2e8f0; width: 10%;">الحالة</th><th style="padding: 12px 8px; border: 1px solid #e2e8f0; width: 15%;">التوقيت</th></tr></thead><tbody>`;
+displayStudents.forEach((student, index) => {
+let statusBadge = '<span style="background-color: #64748b; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; min-width: 55px;">لم يسجل</span>';
+if(student.status === 'present') statusBadge = '<span style="background-color: #10b981; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; min-width: 55px;">حاضر</span>';
+else if(student.status === 'absent') statusBadge = '<span style="background-color: #ef4444; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; min-width: 55px;">غائب</span>';
+else if(student.status === 'late') statusBadge = '<span style="background-color: #f59e0b; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; min-width: 55px;">متأخر</span>';
+const studentIdFormatted = 'STU' + String(index + 1).padStart(3, '0');
+tableHtml += `<tr><td style="padding: 10px 8px; border: 1px solid #e2e8f0; color: #475569;">${index + 1}</td><td style="padding: 10px 8px; border: 1px solid #e2e8f0; color: #475569;">${studentIdFormatted}</td><td style="padding: 10px 8px; border: 1px solid #e2e8f0; text-align: right; font-weight: bold; color: #1e293b;">${student.name}</td><td style="padding: 10px 8px; border: 1px solid #e2e8f0; color: #64748b;" dir="ltr">${student.phone || '-'}</td><td style="padding: 10px 8px; border: 1px solid #e2e8f0; color: #64748b;">${student.class}</td><td style="padding: 10px 8px; border: 1px solid #e2e8f0;">${statusBadge}</td><td style="padding: 10px 8px; border: 1px solid #e2e8f0; color: #64748b; text-align: center;" dir="ltr">${student.time === '-' ? '-' : student.time}</td></tr>`;
+});
+tableHtml += `</tbody></table>`; const dateStr = new Date().toLocaleDateString('ar-SA');
+return `<div style="font-family: 'Tajawal', 'Arial', sans-serif; direction: rtl; padding: 20px; color: #000; background: #fff; width: 100%; box-sizing: border-box;"><div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #6366f1; padding-bottom: 15px;"><h2 style="margin: 0; font-size: 24px; color: #4f46e5; display: inline-flex; align-items: center; justify-content: center; gap: 8px;"><span style="font-size: 26px;">📢</span> نظام إدارة الحضور</h2><p style="margin: 8px 0 4px 0; font-size: 14px; color: #64748b;">مدرسة الجشة المتوسطة - تقرير الحضور اليومي</p><p style="margin: 0; font-size: 14px; font-weight: bold; color: #1e293b;">التاريخ: ${dateStr}</p></div><div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;"><div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 25px; text-align: center; min-width: 110px;"><h3 style="margin: 0; font-size: 28px; color: #3b82f6;">${total}</h3><p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">إجمالي الطلاب</p></div><div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 25px; text-align: center; min-width: 110px;"><h3 style="margin: 0; font-size: 28px; color: #10b981;">${present}</h3><p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">حاضر</p></div><div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 25px; text-align: center; min-width: 110px;"><h3 style="margin: 0; font-size: 28px; color: #ef4444;">${absent}</h3><p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">غائب</p></div><div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 25px; text-align: center; min-width: 110px;"><h3 style="margin: 0; font-size: 28px; color: #f59e0b;">${late}</h3><p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">متأخر</p></div></div>${tableHtml}</div>`;
+};
+window.openStudentModal = () => {
+const sel = document.getElementById('studentSelectDropdown'); if(!sel) return; sel.innerHTML = '<option value="">-- اختر الطالب --</option>'; window.students.forEach(s => sel.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+const m = document.getElementById('studentModal'); if(m) m.classList.add('active');
+};
+window.previewStudentReport = id => {
+if(!id) { window.hideEl('studentReportCard'); window.hideEl('studentJourney'); window.hideEl('captureStudentReportBtn'); window.hideEl('draftAiBtn'); window.hideEl('aiMessageResult'); return; }
+const s = window.students.find(x=>x.id===id);
+if(s) {
+window.setTxt('sr-name', s.name); window.setTxt('sr-class', s.class); window.setTxt('sr-phone', s.phone && s.phone !== '-' ? s.phone : 'غير مدون'); window.setTxt('sr-date', new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })); window.setTxt('sr-absences', (s.absentCount || 0) + ' أيام');
+let sTxt = 'لم يسجل'; let color = '#64748b';
+if(s.status === 'present'){ sTxt = 'حاضر'; color = '#10b981';} else if(s.status === 'absent'){ sTxt = 'غائب'; color = '#f43f5e';} else if(s.status === 'late'){ sTxt = 'متأخر'; color = '#f59e0b';} else if(s.status === 'excused'){ sTxt = 'بعذر'; color = '#0ea5e9';}
+const stEl = document.getElementById('sr-status'); if(stEl) { stEl.innerText = sTxt; stEl.style.color = color; }
+window.showEl('studentReportCard'); window.showEl('captureStudentReportBtn'); window.showEl('draftAiBtn');
+const history = JSON.parse(localStorage.getItem(window.HISTORY_KEY)) || {}; const excuses = JSON.parse(localStorage.getItem(window.EXCUSES_KEY)) || {}; const allDates = Object.keys(history).sort().reverse().slice(0, 31).reverse();
+let presentCount = 0; let lateCount = 0; const dotsPath = document.getElementById('sj-dots-path');
+if(dotsPath) {
+const dotsArray = [];
+allDates.forEach((date) => {
+const record = history[date].find(st => st.id === id);
+if (record && record.status !== 'none') {
+let cls = '';
+if(record.status === 'present') { cls = 'present'; presentCount++; }
+else if(record.status === 'late') { cls = 'late'; lateCount++; }
+else if(record.status === 'excused') { cls = 'excused'; }
+else if(record.status === 'absent') {
+if(excuses.some(e => e.studentId === id && e.date === date)) cls = 'excused';
+else cls = 'absent';
+}
+dotsArray.push({ cls, date: date.substring(5).replace('-', '/') });
+}
+});
+let timelineHtml = '';
+dotsArray.forEach((dot, idx) => {
+const isActive = (idx === dotsArray.length - 1) ? 'active' : '';
+timelineHtml += `<div class="d-tl-dot ${dot.cls} ${isActive}"><div class="d-tl-dot-date">${dot.date}</div></div>`;
+});
+dotsPath.innerHTML = timelineHtml;
+setTimeout(() => { const progressLine = document.getElementById('sj-progress-line'); if(progressLine) progressLine.style.width = '100%'; }, 100);
+}
+const points = (presentCount * 10) + (lateCount * 5); const progress = Math.min(100, (presentCount + lateCount) * 5);
+window.setTxt('sj-progress-val', progress + '%'); window.setTxt('sj-points-val', points);
+window.showEl('studentJourney');
+}
+};
+window.captureStudentReport = () => {
+const area = document.getElementById('reportCaptureArea'); if (!area) return; const btn = document.getElementById('captureStudentReportBtn'); let originalText = '';
+if(btn) { originalText = btn.innerHTML; btn.innerHTML = 'جاري التقاط الشاشة... ⏳'; btn.disabled = true; }
+html2canvas(area, { scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false }).then(canvas => { const nEl = document.getElementById('sr-name'); const link = document.createElement('a'); link.download = `تقرير_انضباط_${nEl?nEl.innerText:''}_${new Date().toISOString().split('T')[0]}.png`; link.href = canvas.toDataURL('image/png'); link.click(); if(btn) { btn.innerHTML = originalText; btn.disabled = false; } window.showCustomAlert("تم حفظ لقطة الشاشة بنجاح!", "success"); }).catch(err => { if(btn) { btn.innerHTML = originalText; btn.disabled = false; } window.showCustomAlert("حدث خطأ أثناء محاولة التقاط الشاشة.", "error"); });
+};
+window.draftParentMessage = () => {
+const nEl = document.getElementById('sr-name'); const cEl = document.getElementById('sr-class'); const stEl = document.getElementById('sr-status'); const abEl = document.getElementById('sr-absences');
+const name = nEl ? nEl.innerText : ''; const cls = cEl ? cEl.innerText : ''; const status = stEl ? stEl.innerText : ''; const absences = abEl ? abEl.innerText : '';
+window.showEl('aiLoadingIndicator'); window.hideEl('aiMessageResult'); const btn = document.getElementById('draftAiBtn'); if(btn) btn.disabled = true;
+let prompt = `اكتب رسالة واتساب (قصيرة جداً وودودة واحترافية) لولي أمر الطالب "${name}" في "${cls}". `;
+if(status === 'غائب') prompt += `الطالب غائب اليوم، وإجمالي غيابه التراكمي أصبح ${absences}. اطلب من ولي الأمر التعاون وتوضيح سبب الغياب بلطف.`; else if (status === 'متأخر') prompt += `الطالب حضر متأخراً اليوم، وإجمالي غيابه التراكمي ${absences}. اطلب من ولي الأمر حث الطالب على الحضور المبكر دعماً لمستقبله.`; else prompt += `الطالب حاضر ومتميز اليوم (وإجمالي غيابه التراكمي ${absences}). اكتب رسالة شكر سريعة لولي الأمر على حرصه ومتابعته المستمرة.`;
+window.fetchGeminiWithBackoff(prompt).then(text => { window.hideEl('aiLoadingIndicator'); window.showEl('aiMessageResult'); window.setTxt('aiMessageText', text.trim()); if(btn) btn.disabled = false; });
+};
+window.copyAiMessage = () => { try { const tempTextArea = document.createElement("textarea"); const msgEl = document.getElementById('aiMessageText'); tempTextArea.value = msgEl ? msgEl.innerText : ''; document.body.appendChild(tempTextArea); tempTextArea.select(); document.execCommand("copy"); document.body.removeChild(tempTextArea); window.showCustomAlert("تم نسخ الرسالة بنجاح! ✅", "success"); } catch(e) { window.showCustomAlert("حدث خطأ أثناء النسخ.", "error"); } };
+window.readJourneyAI = () => {
+const stEl = document.getElementById('studentSelectDropdown'); const studentId = stEl ? stEl.value : ''; if(!studentId) return;
+const history = JSON.parse(localStorage.getItem(window.HISTORY_KEY)) || {}; const allDates = Object.keys(history).sort().reverse().slice(0, 31).reverse(); const pattern = [];
+allDates.forEach(date => { const record = history[date].find(s => s.id === studentId); if(record && record.status !== 'none') pattern.push(record.status === 'present' ? 'حاضر' : (record.status === 'absent' ? 'غائب' : 'متأخر')); });
+const s = window.students.find(st => st.id === studentId); const btn = document.getElementById('journeyAiBtn'); if(btn) btn.disabled = true;
+window.showEl('journeyAiLoading'); window.hideEl('journeyAiResult'); window.hideEl('closeJourneyAiBtn');
+let prompt = `أنت الموجه الطلابي للمدرسة. تسلسل حضور الطالب "${s.name}" خلال الأيام الماضية هو: [${pattern.length === 0 ? 'لا يوجد سجل بعد' : pattern.join('، ')}].
+استنتج حالته النفسية والتربوية واقترح أسلوب تحفيز مناسب.
+مهم جداً: يجب أن يكون الرد النهائي بهذا القالب النصي تماماً وبدون أي إضافات أخرى قبله أو بعده:
+سعادة ولي الأمر/ إدارة المدرسة الموقرة،
+السلام عليكم ورحمة الله وبركاته،
+تحليل سجل الحضور الخاص بالطالب ${s.name}
+(تحليل الانضباط والتحفيز):
+[اكتب هنا الاستنتاج والتحفيز بناءً على المسار المذكور]
+تفضلوا بقبول خالص التقدير،،
+الموجه الطلابي`;
+window.fetchGeminiWithBackoff(prompt).then(text => { window.hideEl('journeyAiLoading'); window.showEl('journeyAiResult'); const res = document.getElementById('journeyAiResult'); if(res) res.innerHTML = window.formatMarkdown(text); if(btn) btn.disabled = false; window.showEl('closeJourneyAiBtn'); });
+};
+window.closeJourneyAi = () => { window.hideEl('journeyAiResult'); window.hideEl('closeJourneyAiBtn'); };
+// Risk Report missing functions
+window.openRiskModal = () => {
+const history = JSON.parse(localStorage.getItem(window.HISTORY_KEY)) || {}; const stats = {};
+window.students.forEach(s => { stats[s.id] = { name: s.name, class: s.class, absent: 0, late: 0, behavior: s.behaviorIssues || 0 }; });
+Object.values(history).forEach(day => { day.forEach(s => { if (stats[s.id]) { if (s.status === 'absent') stats[s.id].absent++; if (s.status === 'late') stats[s.id].late++; } }); });
+const arr = Object.values(stats);
+const topAbsent = [...arr].filter(s => s.absent >= 3).sort((a,b) => b.absent - a.absent); const topLate = [...arr].filter(s => s.late >= 3).sort((a,b) => b.late - a.late); const topBehavior = [...arr].filter(s => s.behavior >= 3).sort((a,b) => b.behavior - a.behavior);
+let html = '';
+const buildTable = (title, data, countKey, color) => {
+if(data.length === 0) return '';
+let t = `<h4 style="color: ${color}; margin-top: 15px; margin-bottom: 10px; border-bottom: 2px solid ${color}; padding-bottom: 5px; font-weight: 800; font-size: 15px;">${title}</h4><table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; margin-bottom: 20px;"><tr style="background: #f1f5f9;"><th style="padding: 10px; border: 1px solid #cbd5e1; color: #475569;">الاسم</th><th style="padding: 10px; border: 1px solid #cbd5e1; color: #475569;">الصف</th><th style="padding: 10px; border: 1px solid #cbd5e1; color: #475569; text-align: center;">العدد</th></tr>`;
+data.forEach(s => { t += `<tr><td style="padding: 10px; border: 1px solid #cbd5e1; font-weight: bold; color: #1e293b;">${s.name}</td><td style="padding: 10px; border: 1px solid #cbd5e1; color: #64748b;">${s.class}</td><td style="padding: 10px; border: 1px solid #cbd5e1; color: ${color}; font-weight: bold; text-align: center; font-size: 16px;">${s[countKey]}</td></tr>`; }); return t + `</table>`;
+};
+html += buildTable('⚠️ كثرة الغياب (3 أيام فأكثر)', topAbsent, 'absent', '#e11d48'); html += buildTable('⏱ كثرة التأخر (3 أيام فأكثر)', topLate, 'late', '#d97706'); html += buildTable('🛑 المشكلات السلوكية (3 مرات فأكثر)', topBehavior, 'behavior', '#4f46e5');
+if(html === '') html = '<div style="text-align: center; padding: 30px; color: #10b981; font-weight: bold; font-size: 16px; border: 2px dashed #10b981; border-radius: 12px; background: #d1fae5; margin-top: 20px;">لا يوجد طلاب بلغوا 3 مرات غياب أو تأخر أو سلوك. وضع الانضباط ممتاز! 🎉</div>';
+const rc = document.getElementById('riskContent'); if(rc) rc.innerHTML = html; const m = document.getElementById('riskModal'); if(m) m.classList.add('active');
+};
+window.generateRiskActionPlan = () => {
+const history = JSON.parse(localStorage.getItem(window.HISTORY_KEY)) || {}; const stats = {};
+window.students.forEach(s => { stats[s.id] = { name: s.name, class: s.class, absent: 0, late: 0, behavior: s.behaviorIssues || 0 }; });
+Object.values(history).forEach(day => { day.forEach(s => { if (stats[s.id]) { if (s.status === 'absent') stats[s.id].absent++; if (s.status === 'late') stats[s.id].late++; } }); });
+const arr = Object.values(stats);
+const topAbsent = [...arr].filter(s => s.absent >= 3).sort((a,b) => b.absent - a.absent).slice(0, 3).map(s=>`${s.name} (${s.absent} غياب)`).join('، '); const topLate = [...arr].filter(s => s.late >= 3).sort((a,b) => b.late - a.late).slice(0, 3).map(s=>`${s.name} (${s.late} تأخر)`).join('، '); const topBehavior = [...arr].filter(s => s.behavior >= 3).sort((a,b) => b.behavior - a.behavior).slice(0, 3).map(s=>`${s.name} (${s.behavior} مشكلة)`).join('، ');
+if(!topAbsent && !topLate && !topBehavior) return window.showCustomAlert("لا يوجد طلاب منذرين لعمل خطة تدخل لهم.", "info");
+const btn = document.getElementById('riskAiBtn'); if(btn) btn.disabled = true; window.showEl('riskAiLoading'); window.hideEl('riskAiResult');
+const prompt = `أنت موجه طلابي خبير في مدرسة متوسطة. لديك الطلاب المنذرين التاليين:
+الغياب المتكرر: ${topAbsent || 'لا يوجد'}
+التأخر المتكرر: ${topLate || 'لا يوجد'}
+المشكلات السلوكية: ${topBehavior || 'لا يوجد'}
+اكتب خطة تدخل إرشادية عملية ومختصرة (في 3 نقاط رئيسية) للتعامل مع هؤلاء الطلاب هذا الأسبوع، وكيفية إشراك أولياء أمورهم بفعالية.`;
+window.fetchGeminiWithBackoff(prompt).then(text => { window.hideEl('riskAiLoading'); window.showEl('riskAiResult'); const res = document.getElementById('riskAiResult'); if(res) res.innerHTML = window.formatMarkdown(text); if(btn) btn.disabled = false; });
+};
+window.exportRiskReportToWord = () => {
+const rc = document.getElementById('riskContent'); if(!rc) return; const content = rc.innerHTML; const dateStr = window.getTodayString();
+const aiRes = document.getElementById('riskAiResult'); const aiContent = (aiRes && aiRes.style.display === 'block') ? `<div style="margin-top: 20px; padding: 15px; border: 1px solid #c084fc; background: #fdf4ff;"><h3>خطة التدخل الإرشادية المقترحة:</h3>${aiRes.innerHTML}</div>` : '';
+const bodyHtml = `<h2 style="text-align: center; margin-bottom: 10px; text-decoration: underline; color: #e11d48;">تقرير الطلاب المنذرين (3 مرات فأكثر)</h2><p style="text-align: center; font-weight: bold; margin-bottom: 30px;">التاريخ: ${dateStr}</p>${content}${aiContent}`;
+const wordHtml = getWordWrapper('تقرير الطلاب المنذرين', bodyHtml);
+const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'تقرير_الطلاب_المنذرين.doc'; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
+};
+document.addEventListener('DOMContentLoaded', window.initApp);
+</script>
+</body>
+</html>
