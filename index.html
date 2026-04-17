@@ -285,7 +285,10 @@
                     <button class="btn" style="background: var(--danger-light); color: #9f1239; border: 1px solid #fecdd3;" onclick="window.markBulk('absent')">الكل غائب ✗</button>
                 </div>
                 <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                    <button class="btn" style="background: linear-gradient(135deg, #f43f5e, #e11d48); color: white; box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2);" onclick="window.openAdminExcusesModal()">الأعذار 📩</button>
+                    <button class="btn" style="background: linear-gradient(135deg, #f43f5e, #e11d48); color: white; box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2); position: relative;" onclick="window.openAdminExcusesModal()">
+                        الأعذار 📩
+                        <span id="pendingExcusesBadge" style="position: absolute; top: -8px; right: -8px; background: #ffb703; color: #78350f; font-size: 12px; font-weight: 800; width: 22px; height: 22px; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; display: none;">0</span>
+                    </button>
                     <button class="btn" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; box-shadow: 0 4px 10px rgba(109, 40, 217, 0.2);" onclick="window.backupData()">نسخ احتياطي 💾</button>
                     <button class="btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.2);" onclick="window.syncDirectly()">مزامنة 🔄</button>
                 </div>
@@ -326,7 +329,7 @@
     <div id="customAlertModal" class="modal-overlay"><div class="modal-box" style="max-width: 400px; text-align: center;"><h3 id="customAlertTitle" style="color: var(--primary); margin-bottom: 15px; font-size: 20px;">تنبيه</h3><p id="customAlertMessage" style="margin-bottom: 30px; font-size: 16px; color: var(--text-main); font-weight: 500; line-height: 1.6;"></p><div id="customAlertButtons" style="display: flex; gap: 10px; justify-content: center;"></div></div></div>
     
     <div id="adminExcusesModal" class="modal-overlay"><div class="modal-box" style="max-width: 700px;"><div class="modal-header"><h3 style="color: var(--primary);">إدارة الأعذار</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div id="adminExcusesContent" style="max-height: 60vh; overflow-y: auto; padding-right: 5px;"></div></div></div>
-    <div id="studentExcuseModal" class="modal-overlay"><div class="modal-box" style="max-width: 500px;"><div class="modal-header"><h3 style="color: var(--primary);">رفع عذر غياب/تأخير</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">التاريخ:</label><input type="date" id="excuseDateInput" class="form-input"></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">نوع العذر:</label><select id="excuseTypeSelect" class="form-select"><option value="عذر طبي">عذر طبي</option><option value="عذر عائلي">عذر عائلي</option><option value="ظرف طارئ">ظرف طارئ</option></select></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">التفاصيل التوضيحية:</label><textarea id="excuseDescInput" class="form-input" rows="3"></textarea></div><div class="input-group" style="margin-bottom: 30px;"><label class="form-label">المرفقات (اختياري - صورة أو PDF):</label><input type="file" id="excuseFileInput" class="form-input" accept="image/*,.pdf" style="padding: 10px; background: white; border: 2px dashed var(--border-color);"></div><button class="modal-btn" style="box-shadow: 0 4px 12px rgba(79,70,229,0.3);" onclick="window.submitStudentExcuse()">إرسال العذر للإدارة</button></div></div>
+    <div id="studentExcuseModal" class="modal-overlay"><div class="modal-box" style="max-width: 500px;"><div class="modal-header"><h3 style="color: var(--primary);">رفع عذر غياب/تأخير</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">التاريخ:</label><input type="date" id="excuseDateInput" class="form-input"></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">نوع العذر:</label><select id="excuseTypeSelect" class="form-select"><option value="عذر طبي">عذر طبي</option><option value="عذر عائلي">عذر عائلي</option><option value="ظرف طارئ">ظرف طارئ</option></select></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">التفاصيل التوضيحية:</label><textarea id="excuseDescInput" class="form-input" rows="3"></textarea></div><div class="input-group" style="margin-bottom: 30px;"><label class="form-label">المرفقات (إلزامي - صورة أو PDF) <span style="color: var(--danger); font-size: 18px; vertical-align: middle;">*</span>:</label><input type="file" id="excuseFileInput" class="form-input" accept="image/*,.pdf" style="padding: 10px; background: white; border: 2px dashed var(--border-color);"></div><div style="text-align: center;"><button class="modal-btn" style="background: linear-gradient(135deg, #38bdf8, #0284c7); box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); width: auto; min-width: 220px; border-radius: 30px; padding: 12px 30px; display: inline-block; transition: transform 0.2s;" onclick="window.submitStudentExcuse()" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">إرسال العذر للإدارة</button></div></div></div>
     <div id="attachmentModal" class="modal-overlay"><div class="modal-box" style="max-width: 600px;"><div class="modal-header"><h3 style="color: var(--primary);">استعراض المرفق</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div id="attachmentContent" style="text-align: center; max-height: 65vh; overflow-y: auto;"></div></div></div>
     
     <div id="todayReportModal" class="modal-overlay"><div class="modal-box"><div class="modal-header"><h3 style="color: var(--primary);">تقرير إحصائية اليوم</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div id="todayReportContent" style="margin-bottom: 25px;"></div><button onclick="window.exportTodayWordReport()" class="modal-btn" style="background: var(--info); box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);">تصدير التقرير (Word)</button></div></div>
@@ -379,6 +382,23 @@
         window.appId = 'school-attendance-final-v3';
 
         // ==========================================
+        // تحديث البادج الخاص بالأعذار
+        // ==========================================
+        window.updateExcuseBadge = () => {
+            const ex = JSON.parse(localStorage.getItem(window.EXCUSES_KEY)) || [];
+            const pendingCount = ex.filter(e => e.status === 'pending').length;
+            const badge = document.getElementById('pendingExcusesBadge');
+            if(badge) {
+                if(pendingCount > 0) {
+                    badge.innerText = pendingCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        };
+
+        // ==========================================
         // اتصال بقاعدة بيانات (Firebase) الخاصة بك
         // ==========================================
         const firebaseConfig = {
@@ -427,6 +447,7 @@
                     } 
                     if(data.history) { localStorage.setItem(window.HISTORY_KEY, JSON.stringify(data.history)); } 
                     if(data.excuses) { localStorage.setItem(window.EXCUSES_KEY, JSON.stringify(data.excuses)); }
+                    window.updateExcuseBadge();
                     
                     window.setupClassFilter(); 
                     window.handleFilter(); 
@@ -576,6 +597,7 @@
                 window.setupClassFilter(); 
                 window.filteredStudents = [...window.students]; 
                 window.renderAll(); 
+                window.updateExcuseBadge();
             } 
             window.checkUrlMode(); 
         };
@@ -600,7 +622,9 @@
                 let c='#64748b', t='لم يسجل'; 
                 if(s.status==='present'){c='#10b981';t='حاضر';}else if(s.status==='absent'){c='#f43f5e';t='غائب';}else if(s.status==='late'){c='#f59e0b';t='متأخر';}else if(s.status==='excused'){c='#0ea5e9';t='بعذر';} 
                 
-                tr.innerHTML = `<td><div class="student-name">${s.name} ${w}</div></td><td class="student-id" dir="ltr">${s.phone||'-'}</td><td style="font-size:13px; font-weight:bold; color:var(--text-muted);">${s.class}</td><td style="text-align:center;"><div class="status-toggles"><button class="toggle-btn ${s.status==='present'?'active-present':''}" onclick="window.changeStatus('${s.id}','present')">ح</button><button class="toggle-btn ${s.status==='absent'?'active-absent':''}" onclick="window.changeStatus('${s.id}','absent')">غ</button><button class="toggle-btn ${s.status==='late'?'active-late':''}" onclick="window.changeStatus('${s.id}','late')">ت</button><button class="toggle-btn ${s.status==='excused'?'active-excused':''}" onclick="window.changeStatus('${s.id}','excused')">ع</button></div></td><td class="time-cell">${s.time}</td><td style="text-align:center;"><button class="delete-btn" title="حذف الطالب" onclick="window.deleteStudent('${s.id}')">حذف 🗑️</button></td>`; 
+                const deleteIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+                
+                tr.innerHTML = `<td><div class="student-name">${s.name} ${w}</div></td><td class="student-id" dir="ltr">${s.phone||'-'}</td><td style="font-size:13px; font-weight:bold; color:var(--text-muted);">${s.class}</td><td style="text-align:center;"><div class="status-toggles"><button class="toggle-btn ${s.status==='present'?'active-present':''}" onclick="window.changeStatus('${s.id}','present')">ح</button><button class="toggle-btn ${s.status==='absent'?'active-absent':''}" onclick="window.changeStatus('${s.id}','absent')">غ</button><button class="toggle-btn ${s.status==='late'?'active-late':''}" onclick="window.changeStatus('${s.id}','late')">ت</button><button class="toggle-btn ${s.status==='excused'?'active-excused':''}" onclick="window.changeStatus('${s.id}','excused')">ع</button></div></td><td class="time-cell">${s.time}</td><td style="text-align:center;"><button class="delete-btn" title="حذف الطالب" onclick="window.deleteStudent('${s.id}')">${deleteIcon}</button></td>`; 
                 tbody.appendChild(tr); 
             }); 
         };
@@ -800,6 +824,7 @@
                 else if(hs[dStr]){ let sr=hs[dStr].find(x=>x.id===sId); if(sr){ sr.status=tarSt; localStorage.setItem(window.HISTORY_KEY,JSON.stringify(hs)); window.saveData(); } } 
                 if (window.db && window.currentUser) setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'shared_attendance', 'live_state'), { excuses: ex }, { merge: true }); 
                 window.openAdminExcusesModal(); 
+                window.updateExcuseBadge();
             } 
         };
 
@@ -1068,6 +1093,8 @@
         window.submitStudentExcuse = () => {
             const d=document.getElementById('excuseDateInput').value, t=document.getElementById('excuseTypeSelect').value, desc=document.getElementById('excuseDescInput').value, f=document.getElementById('excuseFileInput');
             if(!d)return window.showCustomAlert('الرجاء تحديد تاريخ الغياب أو التأخير المطلوب تبريره.');
+            if(!f.files || f.files.length === 0) return window.showCustomAlert('إرفاق المستند (صورة أو PDF) إلزامي جداً لإرسال العذر.');
+            
             const s=window.currentPortalStudents[window.activePortalStudentIndex]; let ex=JSON.parse(localStorage.getItem(window.EXCUSES_KEY))||[];
             const sv=(data,type)=>{
                 ex.push({id:'EXC_'+Date.now(),studentId:s.id,studentName:s.name,date:d,type:t,desc:desc,file:data,fileType:type,status:'pending',notified:false});
@@ -1124,6 +1151,23 @@
         window.exportBehaviorToWord = () => { const r=document.getElementById('behaviorResult').innerHTML; const w=getWordWrapper('محضر مشكلة سلوكية',`<h1>محضر دراسة مشكلة سلوكية</h1><div style="background:#fffbeb; padding:15px; border:1px solid #fcd34d;">${r}</div>`); const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download='محضر_سلوكي.doc'; l.click(); };
 
         window.checkAndAlertForExcuses = s => { const hs=JSON.parse(localStorage.getItem(window.HISTORY_KEY))||{}; const ex=JSON.parse(localStorage.getItem(window.EXCUSES_KEY))||[]; let alertDays=0; Object.keys(hs).forEach(d=>{ const r=hs[d].find(x=>x.id===s.id); if(r&&r.status==='absent'&&!ex.some(e=>e.studentId===s.id&&e.date===d)) alertDays++; }); setTimeout(()=>{ if(alertDays>0) window.showCustomAlert(`تنبيه هام: لديك ${alertDays} يوم غياب لم ترفع لها مبرراً. يرجى المبادرة برفع مبرر غيابك لتلافي الحسم من درجات المواظبة.`); let upd=false; ex.filter(e=>e.studentId===s.id).forEach(e=>{ if((e.status==='accepted'||e.status==='rejected')&&!e.notified){ window.showCustomAlert(e.status==='accepted'?`إشعار إدارة المدرسة: تم قبول عذرك ليوم ${e.date} بنجاح ✅`:`إشعار إدارة المدرسة: نعتذر، تم رفض عذرك ليوم ${e.date} ❌. يمكنك مراجعة المدرسة أو إعادة التقديم من سجل الحضور.`); e.notified=true; upd=true; } }); if(upd) localStorage.setItem(window.EXCUSES_KEY,JSON.stringify(ex)); const td=window.getTodayString(); if(hs[td]){ const tr=hs[td].find(x=>x.id===s.id); if(tr&&tr.status==='late') window.showCustomAlert('عزيزي الطالب، تم رصد تأخرك الصباحي لهذا اليوم. نأمل منك الحرص التام على الحضور المبكر دعماً لمسيرتك التعليمية ⏱️'); } },800); };
+
+        // ==========================================
+        // تحديث البادج الخاص بالأعذار
+        // ==========================================
+        window.updateExcuseBadge = () => {
+            const ex = JSON.parse(localStorage.getItem(window.EXCUSES_KEY)) || [];
+            const pendingCount = ex.filter(e => e.status === 'pending').length;
+            const badge = document.getElementById('pendingExcusesBadge');
+            if(badge) {
+                if(pendingCount > 0) {
+                    badge.innerText = pendingCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        };
 
         document.addEventListener('DOMContentLoaded', window.initApp);
     </script>
