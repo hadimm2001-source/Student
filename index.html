@@ -359,14 +359,19 @@ body.printing-card #printArea { display: block !important; width: 100%; }
 <div id="cloudImportModal" class="modal-overlay" style="z-index: 10000;"><div class="modal-box" style="max-width: 450px;"><div class="modal-header"><h3 id="cloudImportTitle" style="color: var(--primary);">استيراد بيانات</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div class="input-group" style="margin-bottom: 20px;"><label class="form-label">رابط الملف:</label><input type="text" id="cloudFileUrl" class="form-input" dir="ltr"></div><button id="fetchCloudBtn" class="modal-btn" onclick="window.fetchCloudData()">جلب البيانات</button></div></div>
 <div id="bottomNotification" class="bottom-notification-bar"><div class="bn-content"><div id="bnIcon" class="bn-icon">🔔</div><div class="bn-text"><div id="bnTitle" class="bn-title">تنبيه</div><div id="bnDesc" class="bn-desc">...</div></div></div><div id="bnActions" class="bn-actions"></div></div>
 <!-- ==========================================
-JAVASCRIPT - Firebase Integration
+JAVASCRIPT
 ========================================== -->
 <script type="module">
-// 🔑 إعدادات Firebase المدمجة مباشرة
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+window.students = []; window.filteredStudents = []; window.isViewingHistory = false;
+window.currentPortalStudents = []; window.activePortalStudentIndex = 0; window.activePortalTab = 'dashboard';
+window.db = null; window.currentUser = null; window.isRemoteUpdate = false; window.behaviorPdfBase64 = null;
+window.STORAGE_KEY = 'attendance_saas_data'; window.HISTORY_KEY = 'attendance_saas_history'; window.EXCUSES_KEY = 'attendance_saas_excuses';
+window.DEFAULT_SHEET_ID = "1ucLRdqi7YbDu8x6NtIjFEqG-gkrricjz"; window.appId = typeof __app_id !== 'undefined' ? __app_id : 'school-attendance-prod';
 
+// 🔑 إعدادات Firebase المدمجة مباشرة
 const firebaseConfig = {
   apiKey: "AIzaSyCVdLikyOhh7wc29omVblZzNdEG3rakoeA",
   authDomain: "student-absence-8bb60.firebaseapp.com",
@@ -395,14 +400,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-window.students = []; window.filteredStudents = []; window.isViewingHistory = false;
-window.currentPortalStudents = []; window.activePortalStudentIndex = 0; window.activePortalTab = 'dashboard';
-window.currentUser = null; window.isRemoteUpdate = false; window.behaviorPdfBase64 = null;
-window.STORAGE_KEY = 'attendance_saas_data'; window.HISTORY_KEY = 'attendance_saas_history'; window.EXCUSES_KEY = 'attendance_saas_excuses';
-window.DEFAULT_SHEET_ID = "1ucLRdqi7YbDu8x6NtIjFEqG-gkrricjz"; window.appId = 'school-attendance-prod';
-
 const getWordWrapper = (title, content) => `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40' dir='rtl'><head><meta charset='utf-8'><title>${title}</title><style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap'); body, table, th, td, p, h1, h2, h3, h4, div, span { font-family: 'Tajawal', 'Arial', sans-serif !important; } body { direction: rtl; text-align: right; color: #000; } .header-text { text-align: right; font-size: 14pt; font-weight: bold; line-height: 1.6; margin-bottom: 30px; } table { border-collapse: collapse; width: 100%; margin-top: 20px; border: 1px solid #cbd5e1; } th, td { border: 1px solid #cbd5e1; padding: 12px; text-align: center; font-size: 13pt; } th { background-color: #4f46e5; color: white; font-weight: bold; } h1 { color: #4f46e5; font-size: 22pt; text-decoration: underline; margin-bottom: 10px; text-align: center; } h4 { font-size: 16pt; color: #1e293b; text-align: center; }</style></head><body><div class="header-text">المملكة العربية السعودية<br>وزارة التعليم<br>الإدارة العامة للتعليم بمحافظة الأحساء<br>مدرسة الجشة المتوسطة</div>${content}<br><br><br><br><table style="width: 100%; border: none; margin-top: 50px;"><tr style="border: none;"><td style="border: none; text-align: right; font-weight: bold; width: 50%; font-size: 16pt;">الموجه الطلابي:<br><br>عبدالهادي بن محمد المحسن<br><br>التوقيع: .......................</td><td style="border: none; text-align: left; font-weight: bold; width: 50%; font-size: 16pt;">مدير المدرسة:<br><br><br><br>التوقيع: .......................</td></tr></table></body></html>`;
-
 window.setupCloudListener = () => { 
   if (!window.db || !window.currentUser) return; 
   const syncStatus = document.getElementById('cloudSyncStatus');
@@ -424,25 +422,17 @@ window.setupCloudListener = () => {
     console.warn("⚠️ خطأ في المزامنة:", err);
   }); 
 };
-
-window.hideEl = id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; }; 
-window.showEl = (id, displayType = 'block') => { const el = document.getElementById(id); if(el) el.style.display = displayType; }; 
-window.setTxt = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; }; 
-window.getTodayString = () => { const tzoffset = (new Date()).getTimezoneOffset() * 60000; return (new Date(Date.now() - tzoffset)).toISOString().split('T')[0]; }; 
-window.formatMarkdown = text => { let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); html = html.replace(/\*(.*?)\*/g, '<em>$1</em>'); html = html.replace(/\n\*\s(.*?)/g, '<ul><li style="margin-right: 15px; margin-bottom: 5px;">$1</li></ul>'); html = html.replace(/<\/ul>\n<ul>/g, ''); html = html.replace(/\n/g, '<br>'); return html; };
-
+window.hideEl = id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; }; window.showEl = (id, displayType = 'block') => { const el = document.getElementById(id); if(el) el.style.display = displayType; }; window.setTxt = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; }; window.getTodayString = () => { const tzoffset = (new Date()).getTimezoneOffset() * 60000; return (new Date(Date.now() - tzoffset)).toISOString().split('T')[0]; }; window.formatMarkdown = text => { let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); html = html.replace(/\*(.*?)\*/g, '<em>$1</em>'); html = html.replace(/\n\*\s(.*?)/g, '<ul><li style="margin-right: 15px; margin-bottom: 5px;">$1</li></ul>'); html = html.replace(/<\/ul>\n<ul>/g, ''); html = html.replace(/\n/g, '<br>'); return html; };
 window.alertQueue = [];
 window.showCustomAlert = (message, type = 'info') => { const modal = document.getElementById('customAlertModal'); if (modal && modal.classList.contains('active')) { window.alertQueue.push({message, type}); return; } window.setTxt('customAlertTitle', 'تنبيه'); window.setTxt('customAlertMessage', message); document.getElementById('customAlertButtons').innerHTML = `<button class="modal-btn" style="background:var(--primary);" onclick="window.closeCustomAlert()">موافق</button>`; if(modal) modal.classList.add('active'); };
 window.closeCustomAlert = () => { const modal = document.getElementById('customAlertModal'); if(modal) modal.classList.remove('active'); if (window.alertQueue.length > 0) { setTimeout(() => { const next = window.alertQueue.shift(); window.showCustomAlert(next.message, next.type); }, 350); } };
 window.showCustomConfirm = (message, onConfirmStr) => { window.setTxt('customAlertTitle', 'تأكيد الإجراء'); window.setTxt('customAlertMessage', message); document.getElementById('customAlertButtons').innerHTML = `<button class="modal-btn" style="background:var(--danger);" onclick="window.closeModals(); ${onConfirmStr}">نعم، متأكد</button><button class="modal-btn" style="background:var(--text-muted);" onclick="window.closeModals()">إلغاء</button>`; document.getElementById('customAlertModal').classList.add('active'); };
 window.showCustomOptions = (message, btn1Text, btn1Cb, btn2Text, btn2Cb, cancelText) => { window.setTxt('customAlertTitle', 'خيارات الاستيراد'); window.setTxt('customAlertMessage', message); document.getElementById('customAlertButtons').innerHTML = `<button class="modal-btn" style="background:var(--primary); font-size:13px; flex:1;" onclick="window.closeCustomAlert(); ${btn1Cb}"> ${btn1Text} </button><button class="modal-btn" style="background:var(--warning); font-size:13px; flex:1;" onclick="window.closeCustomAlert(); ${btn2Cb}"> ${btn2Text} </button><button class="modal-btn" style="background:var(--text-muted); font-size:13px; flex:1;" onclick="window.closeCustomAlert();"> ${cancelText} </button>`; document.getElementById('customAlertModal').classList.add('active'); };
 window.closeModals = () => document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('active'));
-
 let notificationTimeout;
 window.showStatusNotification = (student, status) => { const bar = document.getElementById('bottomNotification'); if (!bar || !student) return; const icon = document.getElementById('bnIcon'); const title = document.getElementById('bnTitle'); const desc = document.getElementById('bnDesc'); const actions = document.getElementById('bnActions'); if(icon && title && desc && actions) { if (status === 'late') { icon.innerText = '🕒'; icon.style.background = '#fef3c7'; icon.style.color = '#d97706'; title.innerText = `تأخير: ${student.name}`; desc.innerText = `تم تسجيل الطالب كمتأخر في تمام الساعة ${student.time}.`; actions.innerHTML = `<button class="bn-btn bn-btn-whatsapp" onclick="window.sendSingleWhatsApp('${student.id}', 'late')">إرسال تنبيه</button><button class="bn-btn bn-btn-secondary" onclick="window.closeStatusNotification()">إغلاق</button>`; } else if (status === 'absent') { icon.innerText = '❌'; icon.style.background = '#ffe4e6'; icon.style.color = '#e11d48'; title.innerText = `غياب: ${student.name}`; desc.innerText = `تم تسجيل الطالب كغائب اليوم.`; actions.innerHTML = `<button class="bn-btn bn-btn-whatsapp" onclick="window.sendSingleWhatsApp('${student.id}', 'absent')">إرسال رسالة</button><button class="bn-btn bn-btn-secondary" onclick="window.closeStatusNotification()">إغلاق</button>`; } else if (status === 'excused') { icon.innerText = '📝'; icon.style.background = '#eff6ff'; icon.style.color = '#3b82f6'; title.innerText = `غياب بعذر: ${student.name}`; desc.innerText = `تم تسجيل الطالب كغائب بعذر مقبول.`; actions.innerHTML = `<button class="bn-btn bn-btn-secondary" onclick="window.closeStatusNotification()">إغلاق</button>`; } else { icon.innerText = '✅'; icon.style.background = '#d1fae5'; icon.style.color = '#059669'; title.innerText = `حضور: ${student.name}`; desc.innerText = `تم تسجيل حضور الطالب بنجاح.`; actions.innerHTML = `<button class="bn-btn bn-btn-secondary" onclick="window.closeStatusNotification()">إغلاق</button>`; } } bar.classList.add('active'); clearTimeout(notificationTimeout); notificationTimeout = setTimeout(() => { window.closeStatusNotification(); }, 5000); };
 window.closeStatusNotification = () => { const bar = document.getElementById('bottomNotification'); if (bar) bar.classList.remove('active'); };
 window.sendSingleWhatsApp = (id, status) => { const s = window.students.find(x => x.id === id); if (!s || !s.phone || s.phone === '-') return window.showCustomAlert("لا يوجد رقم جوال مسجل لهذا الطالب.", "warning"); let msg = status === 'late' ? `نحيطكم علماً بتأخر الطالب/ة: ${s.name} اليوم ${window.getTodayString()} الساعة ${s.time}. نأمل متابعته.` : `نحيطكم علماً بغياب الطالب/ة: ${s.name} اليوم ${window.getTodayString()}. نأمل المتابعة.`; window.open(`https://wa.me/${s.phone}?text=${encodeURIComponent(msg)}`, '_blank'); window.closeStatusNotification(); };
-
 window.initApp = () => { 
   window.setTxt('currentDate', new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })); 
   const savedData = localStorage.getItem(window.STORAGE_KEY); 
@@ -462,168 +452,35 @@ window.initApp = () => {
   } 
   window.checkUrlMode(); 
 };
-
 window.checkUrlMode = () => { 
   const urlParams = new URLSearchParams(window.location.search); 
   if (urlParams.get('admin') === 'true') window.switchLoginTab('admin'); 
   else window.switchLoginTab('student'); 
 };
-
 window.saveData = () => { 
   if(window.isViewingHistory) return; 
   localStorage.setItem(window.STORAGE_KEY, JSON.stringify(window.students)); 
   let history = JSON.parse(localStorage.getItem(window.HISTORY_KEY)) || {}; 
   history[window.getTodayString()] = JSON.parse(JSON.stringify(window.students)); 
   localStorage.setItem(window.HISTORY_KEY, JSON.stringify(history)); 
+  
+  // مزامنة سحابية فورية
   if (window.db && window.currentUser && !window.isRemoteUpdate) {
     setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'shared_attendance', 'live_state'), { students: window.students }, { merge: true }).catch(err => console.warn("⚠️ خطأ في الحفظ السحابي:", err));
   } 
 };
-
-window.setupClassFilter = () => { 
-  const selects = [document.getElementById('classFilter'), document.getElementById('rangeClassFilter')]; 
-  const uniqueClasses = [...new Set(window.students.map(s => s.class))].sort(); 
-  selects.forEach(select => { 
-    if(!select) return; 
-    const currentVal = select.value; 
-    select.innerHTML = '<option value="all">جميع الفصول</option>'; 
-    uniqueClasses.forEach(cls => { select.innerHTML += `<option value="${cls}">${cls}</option>`; }); 
-    if(uniqueClasses.includes(currentVal)) select.value = currentVal; 
-  }); 
-};
-
-window.renderAll = () => { 
-  window.renderTable(); 
-  window.renderStats(); 
-  window.renderCharts(); 
-  if(document.getElementById('studentPortalView') && document.getElementById('studentPortalView').style.display === 'block') window.renderCurrentPortalTab(); 
-};
-
-window.renderTable = () => { 
-  const tbody = document.getElementById('tableBody'); 
-  if(!tbody) return; 
-  tbody.innerHTML = ''; 
-  if (window.filteredStudents.length === 0) return; 
-  window.filteredStudents.forEach(student => { 
-    const tr = document.createElement('tr'); 
-    let warningBadge = student.absentCount >= 3 ? `<span class="badge-warning">⚠️ غياب (${student.absentCount})</span>` : ''; 
-    let sText = 'لم يسجل'; let sColor = '#64748b'; 
-    if(student.status === 'present') { sText = 'حاضر'; sColor = 'var(--success)'; } 
-    else if(student.status === 'absent') { sText = 'غائب'; sColor = 'var(--danger)'; } 
-    else if(student.status === 'late') { sText = 'متأخر'; sColor = 'var(--warning)'; } 
-    else if(student.status === 'excused') { sText = 'بعذر'; sColor = 'var(--info)'; } 
-    const disableBtn = window.isViewingHistory ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''; 
-    tr.innerHTML = `<td><div class="student-name">${student.name} ${warningBadge}</div></td><td class="student-id" dir="ltr">${student.phone || '-'}</td><td style="font-size: 12.5px; font-weight: 600; color: var(--text-muted);">${student.class}</td><td style="text-align: center;"><div class="status-toggles"><button ${disableBtn} class="toggle-btn ${student.status==='present'?'active-present':''}" onclick="window.changeStatus('${student.id}','present')">حاضر</button><button ${disableBtn} class="toggle-btn ${student.status==='absent'?'active-absent':''}" onclick="window.changeStatus('${student.id}','absent')">غائب</button><button ${disableBtn} class="toggle-btn ${student.status==='late'?'active-late':''}" onclick="window.changeStatus('${student.id}','late')">تأخير</button><button ${disableBtn} class="toggle-btn ${student.status==='excused'?'active-excused':''}" onclick="window.changeStatus('${student.id}','excused')">بعذر</button></div><div class="print-status" style="color: ${sColor};">${sText}</div></td><td style="text-align: left;" class="time-cell">${student.time}</td><td style="text-align: center;" class="action-col"><button ${disableBtn} class="delete-btn" onclick="window.deleteStudent('${student.id}')">حذف</button></td>`; 
-    tbody.appendChild(tr); 
-  }); 
-};
-
-window.changeStatus = (id, newStatus) => { 
-  const timeNow = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }); 
-  let statusChanged = false; let targetStudent = null; 
-  window.students = window.students.map(s => { 
-    if (s.id === id && s.status !== newStatus) { 
-      statusChanged = true; 
-      if (newStatus === 'absent') s.absentCount++; 
-      if (s.status === 'absent' && newStatus !== 'absent') s.absentCount = Math.max(0, s.absentCount - 1); 
-      targetStudent = { ...s, status: newStatus, time: timeNow }; 
-      return targetStudent; 
-    } 
-    return s; 
-  }); 
-  if (statusChanged) { 
-    window.saveData(); 
-    window.handleFilter(); 
-    if(targetStudent) window.showStatusNotification(targetStudent, newStatus); 
-  } 
-};
-
-window.markBulk = newStatus => { 
-  const timeNow = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }); 
-  const filteredIds = new Set(window.filteredStudents.map(s => s.id)); 
-  let anyChanged = false; 
-  window.students = window.students.map(s => { 
-    if (filteredIds.has(s.id) && s.status !== newStatus) { 
-      anyChanged = true; 
-      if (newStatus === 'absent') s.absentCount++; 
-      if (s.status === 'absent' && newStatus !== 'absent') s.absentCount = Math.max(0, s.absentCount - 1); 
-      return { ...s, status: newStatus, time: timeNow }; 
-    } 
-    return s; 
-  }); 
-  if(anyChanged) { 
-    window.saveData(); 
-    window.handleFilter(); 
-    window.showCustomAlert(`تم التحديث بنجاح`, 'success'); 
-  } 
-};
-
-window.handleFilter = () => { 
-  const q = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase() : ''; 
-  const c = document.getElementById('classFilter') ? document.getElementById('classFilter').value : 'all'; 
-  const st = document.getElementById('statusFilter') ? document.getElementById('statusFilter').value : 'all'; 
-  window.filteredStudents = window.students.filter(s => (s.name.toLowerCase().includes(q) || (s.phone && s.phone.includes(q))) && (c === 'all' || s.class === c) && (st === 'all' || s.status === st)); 
-  window.renderAll(); 
-};
-
-window.deleteStudent = id => window.showCustomConfirm('هل أنت متأكد من الحذف؟', `window.executeDelete('${id}')`); 
-window.executeDelete = id => { 
-  window.students = window.students.filter(s => s.id !== id); 
-  window.saveData(); 
-  window.setupClassFilter(); 
-  window.handleFilter(); 
-};
-
-window.checkThresholdsAndAlert = (id, type) => { 
-  const history = JSON.parse(localStorage.getItem(window.HISTORY_KEY)) || {}; 
-  let count = 0; 
-  const s = window.students.find(x => x.id === id); 
-  if(!s) return; 
-  if(type === 'behavior') count = s.behaviorIssues || 0; 
-  else Object.values(history).forEach(day => { 
-    const rec = day.find(x => x.id === id); 
-    if(rec && rec.status === type) count++; 
-  }); 
-  if (count === 3) setTimeout(() => window.showCustomAlert(`⚠️ الطالب (${s.name}) بلغ 3 مرات في "${type}". يرجى الإرشاد.`, "warning"), 500); 
-};
-
-window.renderStats = () => { 
-  const total = window.students.length; 
-  const present = window.students.filter(s => s.status === 'present').length; 
-  const absent = window.students.filter(s => s.status === 'absent').length; 
-  const late = window.students.filter(s => s.status === 'late').length; 
-  window.setTxt('stat-total', total); 
-  window.setTxt('stat-present', present); 
-  window.setTxt('stat-present-pct', total===0?0:Math.round((present/total)*100) + '%'); 
-  window.setTxt('stat-absent', absent); 
-  window.setTxt('stat-absent-pct', total===0?0:Math.round((absent/total)*100) + '%'); 
-  window.setTxt('stat-late', late); 
-  window.setTxt('stat-late-pct', total===0?0:Math.round((late/total)*100) + '%'); 
-};
-
+window.setupClassFilter = () => { const selects = [document.getElementById('classFilter'), document.getElementById('rangeClassFilter')]; const uniqueClasses = [...new Set(window.students.map(s => s.class))].sort(); selects.forEach(select => { if(!select) return; const currentVal = select.value; select.innerHTML = '<option value="all">جميع الفصول</option>'; uniqueClasses.forEach(cls => { select.innerHTML += `<option value="${cls}">${cls}</option>`; }); if(uniqueClasses.includes(currentVal)) select.value = currentVal; }); };
+window.renderAll = () => { window.renderTable(); window.renderStats(); window.renderCharts(); if(document.getElementById('studentPortalView') && document.getElementById('studentPortalView').style.display === 'block') window.renderCurrentPortalTab(); };
+window.renderTable = () => { const tbody = document.getElementById('tableBody'); if(!tbody) return; tbody.innerHTML = ''; if (window.filteredStudents.length === 0) return; window.filteredStudents.forEach(student => { const tr = document.createElement('tr'); let warningBadge = student.absentCount >= 3 ? `<span class="badge-warning">⚠️ غياب (${student.absentCount})</span>` : ''; let sText = 'لم يسجل'; let sColor = '#64748b'; if(student.status === 'present') { sText = 'حاضر'; sColor = 'var(--success)'; } else if(student.status === 'absent') { sText = 'غائب'; sColor = 'var(--danger)'; } else if(student.status === 'late') { sText = 'متأخر'; sColor = 'var(--warning)'; } else if(student.status === 'excused') { sText = 'بعذر'; sColor = 'var(--info)'; } const disableBtn = window.isViewingHistory ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''; tr.innerHTML = `<td><div class="student-name">${student.name} ${warningBadge}</div></td><td class="student-id" dir="ltr">${student.phone || '-'}</td><td style="font-size: 12.5px; font-weight: 600; color: var(--text-muted);">${student.class}</td><td style="text-align: center;"><div class="status-toggles"><button ${disableBtn} class="toggle-btn ${student.status==='present'?'active-present':''}" onclick="window.changeStatus('${student.id}','present')">حاضر</button><button ${disableBtn} class="toggle-btn ${student.status==='absent'?'active-absent':''}" onclick="window.changeStatus('${student.id}','absent')">غائب</button><button ${disableBtn} class="toggle-btn ${student.status==='late'?'active-late':''}" onclick="window.changeStatus('${student.id}','late')">تأخير</button><button ${disableBtn} class="toggle-btn ${student.status==='excused'?'active-excused':''}" onclick="window.changeStatus('${student.id}','excused')">بعذر</button></div><div class="print-status" style="color: ${sColor};">${sText}</div></td><td style="text-align: left;" class="time-cell">${student.time}</td><td style="text-align: center;" class="action-col"><button ${disableBtn} class="delete-btn" onclick="window.deleteStudent('${student.id}')">حذف</button></td>`; tbody.appendChild(tr); }); };
+window.changeStatus = (id, newStatus) => { const timeNow = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }); let statusChanged = false; let targetStudent = null; window.students = window.students.map(s => { if (s.id === id && s.status !== newStatus) { statusChanged = true; if (newStatus === 'absent') s.absentCount++; if (s.status === 'absent' && newStatus !== 'absent') s.absentCount = Math.max(0, s.absentCount - 1); targetStudent = { ...s, status: newStatus, time: timeNow }; return targetStudent; } return s; }); if (statusChanged) { window.saveData(); window.handleFilter(); if(targetStudent) window.showStatusNotification(targetStudent, newStatus); } };
+window.markBulk = newStatus => { const timeNow = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }); const filteredIds = new Set(window.filteredStudents.map(s => s.id)); let anyChanged = false; window.students = window.students.map(s => { if (filteredIds.has(s.id) && s.status !== newStatus) { anyChanged = true; if (newStatus === 'absent') s.absentCount++; if (s.status === 'absent' && newStatus !== 'absent') s.absentCount = Math.max(0, s.absentCount - 1); return { ...s, status: newStatus, time: timeNow }; } return s; }); if(anyChanged) { window.saveData(); window.handleFilter(); window.showCustomAlert(`تم التحديث بنجاح`, 'success'); } };
+window.handleFilter = () => { const q = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase() : ''; const c = document.getElementById('classFilter') ? document.getElementById('classFilter').value : 'all'; const st = document.getElementById('statusFilter') ? document.getElementById('statusFilter').value : 'all'; window.filteredStudents = window.students.filter(s => (s.name.toLowerCase().includes(q) || (s.phone && s.phone.includes(q))) && (c === 'all' || s.class === c) && (st === 'all' || s.status === st)); window.renderAll(); };
+window.deleteStudent = id => window.showCustomConfirm('هل أنت متأكد من الحذف؟', `window.executeDelete('${id}')`); window.executeDelete = id => { window.students = window.students.filter(s => s.id !== id); window.saveData(); window.setupClassFilter(); window.handleFilter(); };
+window.checkThresholdsAndAlert = (id, type) => { const history = JSON.parse(localStorage.getItem(window.HISTORY_KEY)) || {}; let count = 0; const s = window.students.find(x => x.id === id); if(!s) return; if(type === 'behavior') count = s.behaviorIssues || 0; else Object.values(history).forEach(day => { const rec = day.find(x => x.id === id); if(rec && rec.status === type) count++; }); if (count === 3) setTimeout(() => window.showCustomAlert(`⚠️ الطالب (${s.name}) بلغ 3 مرات في "${type}". يرجى الإرشاد.`, "warning"), 500); };
+window.renderStats = () => { const total = window.students.length; const present = window.students.filter(s => s.status === 'present').length; const absent = window.students.filter(s => s.status === 'absent').length; const late = window.students.filter(s => s.status === 'late').length; window.setTxt('stat-total', total); window.setTxt('stat-present', present); window.setTxt('stat-present-pct', total===0?0:Math.round((present/total)*100) + '%'); window.setTxt('stat-absent', absent); window.setTxt('stat-absent-pct', total===0?0:Math.round((absent/total)*100) + '%'); window.setTxt('stat-late', late); window.setTxt('stat-late-pct', total===0?0:Math.round((late/total)*100) + '%'); };
 window.renderCharts = () => {};
-
 const apiKey = "";
-window.fetchGeminiWithBackoff = async (promptOrParts, retries = 5) => { 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`; 
-  let parts = typeof promptOrParts === 'string' ? [{ text: promptOrParts }] : promptOrParts; 
-  const payload = { contents: [{ parts: parts }], systemInstruction: { parts: [{ text: "أنت مساعد ذكي ونظام خبير في الإدارة المدرسية والإرشاد الطلابي." }] } }; 
-  for (let i = 0; i < retries; i++) { 
-    try { 
-      const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); 
-      if (!response.ok) { 
-        if(response.status === 400 || response.status === 413 || response.status === 500) return "عذراً، يبدو أن حجم المرفقات كبير جداً ولم يتمكن النظام من معالجته. يرجى المحاولة بدون المرفقات والاعتماد على ذاكرة النظام."; 
-        throw new Error(`HTTP error!`); 
-      } 
-      const data = await response.json(); 
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || "لم يتم استرجاع نص."; 
-    } catch (error) { 
-      if (i === retries - 1) return "عذراً، خطأ ذكاء اصطناعي. يرجى المحاولة مرة أخرى."; 
-      await new Promise(resolve => setTimeout(resolve, [1000, 2000, 4000, 8000, 16000][i])); 
-    } 
-  } 
-};
-
+window.fetchGeminiWithBackoff = async (promptOrParts, retries = 5) => { const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`; let parts = typeof promptOrParts === 'string' ? [{ text: promptOrParts }] : promptOrParts; const payload = { contents: [{ parts: parts }], systemInstruction: { parts: [{ text: "أنت مساعد ذكي ونظام خبير في الإدارة المدرسية والإرشاد الطلابي." }] } }; for (let i = 0; i < retries; i++) { try { const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); if (!response.ok) { if(response.status === 400 || response.status === 413 || response.status === 500) return "عذراً، يبدو أن حجم المرفقات كبير جداً ولم يتمكن النظام من معالجته. يرجى المحاولة بدون المرفقات والاعتماد على ذاكرة النظام."; throw new Error(`HTTP error!`); } const data = await response.json(); return data.candidates?.[0]?.content?.parts?.[0]?.text || "لم يتم استرجاع نص."; } catch (error) { if (i === retries - 1) return "عذراً، خطأ ذكاء اصطناعي. يرجى المحاولة مرة أخرى."; await new Promise(resolve => setTimeout(resolve, [1000, 2000, 4000, 8000, 16000][i])); } } };
 window.syncDirectly = async (isAuto = false) => {
 if (!isAuto) window.showCustomAlert("جاري المزامنة...", "info");
 try {
@@ -695,7 +552,7 @@ if (importedCount > 0) { window.tempNewStudents = newStudents; window.showCustom
 } catch (error) { window.showCustomAlert('خطأ بالملف.', 'error'); }
 }; reader.readAsArrayBuffer(file); event.target.value = '';
 };
-window.exportCSV = () => { let csv = "\uFEFFالاسم,رقم الجوال,الصف,الحالة,التوقيت\n"; window.filteredStudents.forEach(s => csv += `${s.name},${s.phone},${s.class},${s.status},${s.time}\n`); saveAs(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), "سجل.csv"); };
+window.exportCSV = () => { let csv = "\uFEFFالاسم,رقم الجوال,الصف,الحالة,التوقيت\n"; window.filteredStudents.forEach(s => csv += `${s.name},${s.phone},${s.class},${s.status},${s.time}\n`); const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'سجل.csv'; a.click(); };
 window.backupData = () => { const data = { students: window.students, history: JSON.parse(localStorage.getItem(window.HISTORY_KEY)) || {}, excuses: JSON.parse(localStorage.getItem(window.EXCUSES_KEY)) || [] }; const link = document.createElement('a'); link.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data)); link.download = "backup.json"; link.click(); };
 window.restoreBackup = e => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = evt => { try { const data = JSON.parse(evt.target.result); if (data.students) { window.tempRestoreData = data; window.showCustomConfirm("سيتم مسح البيانات الحالية. المتابعة؟", `window.executeRestore()`); } } catch (err) { window.showCustomAlert("ملف غير صالح", "error"); } }; reader.readAsText(file); e.target.value = ''; };
 window.executeRestore = () => { if(window.tempRestoreData) { localStorage.setItem(window.STORAGE_KEY, JSON.stringify(window.tempRestoreData.students)); localStorage.setItem(window.HISTORY_KEY, JSON.stringify(window.tempRestoreData.history)); localStorage.setItem(window.EXCUSES_KEY, JSON.stringify(window.tempRestoreData.excuses)); window.students = window.tempRestoreData.students; window.setupClassFilter(); window.handleFilter(); window.tempRestoreData = null; window.saveData(); window.showCustomAlert("تم الاستعادة", "success"); } };
