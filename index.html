@@ -227,7 +227,7 @@
         .ai-box { background: linear-gradient(135deg, #fdf4ff, #e0e7ff); border: 1px solid #c084fc; padding: 15px; border-radius: var(--radius-md); margin-top: 15px; font-size: 14px; display: none; }
         
         @media (max-width: 1024px) { .pd-layout { flex-direction: column; } .pd-sidebar { position: relative; width: 100%; height: auto; border-left: none; border-bottom: 1px solid var(--border-color); flex-direction: row; flex-wrap: wrap; justify-content: space-between; box-shadow: none; padding: 15px;} .pd-nav { display: flex; flex-direction: row; flex-wrap: wrap; padding: 0; gap: 10px;} .pd-nav-item { margin-bottom: 0; padding: 10px 16px; font-size: 14px;} .pd-student-profile { margin: 0; padding: 10px; border: none;} .pd-main { margin-right: 0; padding: 20px; } .d-cards-grid { grid-template-columns: repeat(2, 1fr); } .d-bottom-grid { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) { .container { padding: 10px; } header { flex-direction: column; text-align: center; gap: 15px; } .header-title { justify-content: center; text-align: center; font-size: 20px; } .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; } .filters-row { flex-direction: column; gap: 10px; } .input-group { min-width: 100%; } .actions-row { flex-direction: column; align-items: stretch; } .dropdown { width: 100%; } .dropdown > button { width: 100%; justify-content: center; } .modal-box { width: 95%; padding: 15px; margin: 10px; } .d-cards-grid { grid-template-columns: 1fr; } .pd-global-header { flex-direction: column-reverse; gap: 15px; padding: 15px;} .pd-search-box { width: 100%; } .d-title-container { flex-direction: column; align-items: flex-start; gap: 10px;} .d-banner { padding: 20px;} .d-banner-stats { grid-template-columns: repeat(2, 1fr);} .d-timeline-wrapper { padding-bottom: 25px; } .bottom-notification-bar { flex-direction: column; bottom: -200px; padding: 15px; text-align: center; gap: 10px; } .bottom-notification-bar.active { bottom: 15px; } .bn-content { flex-direction: column; text-align: center; gap: 5px; } .bn-actions { width: 100%; justify-content: center; flex-wrap: wrap; margin-right: 0;} .bn-btn { flex: 1; min-width: 120px; } }
+        @media (max-width: 768px) { .container { padding: 10px; } header { flex-direction: column; text-align: center; gap: 15px; } .header-title { justify-content: center; text-align: center; font-size: 20px; } .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; } .filters-row { flex-direction: column; gap: 10px; } .input-group { min-width: 100%; } .actions-row { flex-direction: column; align-items: stretch; } .dropdown { width: 100%; } .dropdown > button { width: 100%; justify-content: center; } .modal-box { width: 95%; padding: 15px; margin: 10px auto; box-sizing: border-box; } .d-cards-grid { grid-template-columns: 1fr; } .pd-global-header { flex-direction: column-reverse; gap: 15px; padding: 15px;} .pd-search-box { width: 100%; } .d-title-container { flex-direction: column; align-items: flex-start; gap: 10px;} .d-banner { padding: 20px;} .d-banner-stats { grid-template-columns: repeat(2, 1fr);} .d-timeline-wrapper { padding-bottom: 25px; } .bottom-notification-bar { flex-direction: column; bottom: -200px; padding: 15px; text-align: center; gap: 10px; } .bottom-notification-bar.active { bottom: 15px; } .bn-content { flex-direction: column; text-align: center; gap: 5px; } .bn-actions { width: 100%; justify-content: center; flex-wrap: wrap; margin-right: 0;} .bn-btn { flex: 1; min-width: 120px; } }
         @media print { body * { visibility: hidden; } #printArea, #printArea * { visibility: visible; } #printArea { position: absolute; left: 0; top: 0; width: 100%; } }
     </style>
 </head>
@@ -425,7 +425,7 @@
 
     <div id="riskModal" class="modal-overlay"><div class="modal-box" style="max-width: 650px;"><div class="modal-header"><h3 style="color: var(--danger);">تقرير الطلاب المنذرين ⚠️</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div id="riskContent" style="max-height: 350px; overflow-y: auto; padding-right: 5px;"></div><div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);"><button class="modal-btn" style="background: linear-gradient(135deg, #8b5cf6, #c084fc); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);" onclick="window.generateRiskActionPlan()">✨ توليد خطة تدخل إرشادية (AI)</button><div id="riskAiLoading" class="ai-loading" style="color: #8b5cf6;">جاري إعداد الخطة التربوية...</div><div id="riskAiResult" class="ai-box" style="max-height: 250px; overflow-y: auto; background: #faf5ff; border-color: #d8b4fe; color: #4c1d95;"></div></div><button class="modal-btn" style="background: linear-gradient(135deg, #f43f5e, #e11d48); margin-top: 20px;" onclick="window.exportRiskReportToWord()">استخراج التقرير بالكامل (Word) 📄</button></div></div>
 
-    <div id="behaviorModal" class="modal-overlay"><div class="modal-box" style="max-width: 600px;"><div class="modal-header"><h3 style="color: var(--warning); display: flex; align-items: center; gap: 8px;">🛑 تسجيل مشكلة سلوكية</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الفصل:</label><select id="behaviorClassSelect" class="form-select" onchange="window.populateBehaviorStudents()"><option value="">-- اختر --</option></select></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الطالب المعني:</label><select id="behaviorStudentSelect" class="form-select"><option value="">-- اختر الفصل أولاً --</option></select></div><div class="input-group" style="margin-bottom: 20px;"><label class="form-label">وصف المشكلة السلوكية:</label><textarea id="behaviorDescription" class="form-input" rows="4" placeholder="اكتب تفاصيل المخالفة هنا بدقة..."></textarea></div><div style="border: 2px dashed var(--border-color); padding: 20px; text-align: center; margin-bottom: 25px; border-radius: var(--radius-md); background: #f8fafc;"><p style="font-size:13px; color:var(--text-muted); margin-bottom:12px; font-weight:bold;">للحصول على التصنيف الدقيق، ارفق دليل المواظبة (اختياري)</p><input type="file" id="behaviorPdfInput" accept="application/pdf" style="display: none;" onchange="window.handleBehaviorPdfUpload(event)"><button class="modal-btn" style="background: linear-gradient(135deg, #64748b, #475569);" onclick="document.getElementById('behaviorPdfInput').click()">📥 إرفاق ملف الـ PDF</button></div><button class="modal-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);" onclick="window.analyzeBehavior()">✨ تصنيف آلي واقتراح الإجراء</button><div id="behaviorLoading" class="ai-loading" style="color: var(--warning);">جاري مطابقة الحالة مع الدليل...</div><div id="behaviorResultContainer" style="display: none; margin-top: 20px;"><div id="behaviorResult" class="ai-box" style="display: block; background: #fffbeb; border-color: #fcd34d; color: #92400e; max-height: 250px; overflow-y:auto;"></div><button class="modal-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-top: 15px;" onclick="window.exportBehaviorToWord()">تصدير المحضر (Word) 📄</button></div></div></div>
+    <div id="behaviorModal" class="modal-overlay"><div class="modal-box" style="max-width: 600px;"><div class="modal-header"><h3 style="color: var(--warning); display: flex; align-items: center; gap: 8px;">🛑 تسجيل مشكلة سلوكية</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الفصل:</label><select id="behaviorClassSelect" class="form-select" onchange="window.populateBehaviorStudents()"><option value="">-- اختر --</option></select></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الطالب المعني:</label><select id="behaviorStudentSelect" class="form-select"><option value="">-- اختر الفصل أولاً --</option></select></div><div class="input-group" style="margin-bottom: 20px;"><label class="form-label">وصف المشكلة السلوكية:</label><textarea id="behaviorDescription" class="form-input" rows="4" placeholder="اكتب تفاصيل المخالفة هنا بدقة..."></textarea></div><div style="border: 2px dashed var(--border-color); padding: 20px; text-align: center; margin-bottom: 25px; border-radius: var(--radius-md); background: #f8fafc;"><p style="font-size:13px; color:var(--text-muted); margin-bottom:12px; font-weight:bold;">للحصول على التصنيف الدقيق، ارفق دليل المواظبة (اختياري)</p><input type="file" id="behaviorPdfInput" accept="application/pdf" style="display: none;" onchange="window.handleBehaviorPdfUpload(event)"><button class="modal-btn" style="background: linear-gradient(135deg, #64748b, #475569);" onclick="document.getElementById('behaviorPdfInput').click()">📥 إرفاق ملف الـ PDF</button></div><button class="modal-btn" style="background: var(--warning); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);" onclick="window.analyzeBehavior()">✨ تصنيف آلي واقتراح الإجراء</button><div id="behaviorLoading" class="ai-loading" style="color: var(--warning);">جاري مطابقة الحالة مع الدليل...</div><div id="behaviorResultContainer" style="display: none; margin-top: 20px;"><div id="behaviorResult" class="ai-box" style="display: block; background: #fffbeb; border-color: #fcd34d; color: #92400e; max-height: 250px; overflow-y:auto;"></div><button class="modal-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-top: 15px;" onclick="window.exportBehaviorToWord()">تصدير المحضر (Word) 📄</button></div></div></div>
 
     <div id="bottomNotification" class="bottom-notification-bar">
         <div class="bn-content">
@@ -549,7 +549,7 @@
                 } 
             }); 
             
-            // 2. الاستماع لملفات الأعذار المستقلة لضمان عدم تجاوز سعة الملف (1MB Limit Fix)
+            // 2. الاستماع لملفات الأعذار المستقلة
             onSnapshot(collection(window.db, 'artifacts', window.appId, 'public', 'data', 'excuses'), snap => {
                 let ex = [];
                 snap.forEach(d => {
@@ -580,7 +580,7 @@
                 setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'shared_attendance', 'live_state'), { 
                     students: window.students, 
                     history: hist, 
-                    excuses: deleteField() // إزالة الأعذار من الملف الرئيسي لتخفيف الحجم ومنع خطأ 1MB
+                    excuses: deleteField()
                 }, { merge: true }).then(()=>{
                     const el = document.getElementById('cloudSyncStatus'); 
                     if(el) { el.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.3)'; setTimeout(() => el.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)', 500); }
@@ -864,7 +864,7 @@
                             if(!window.students.find(s=>s.name===n&&s.class===g)){ ns.push({id:'ID_'+Date.now()+Math.random(), phone:p, name:n, class:g, status:'none', time:'-', absentCount:0, behaviorIssues:0}); c++; } 
                         } 
                     }); 
-                    if(c>0){ window.tempNewStudents=ns; window.showCustomConfirm(`وجدنا عدد ${c} طالب. هل تريد استبدال القائمة أم الإضافة إليها؟<br><br><button class="btn btn-primary" onclick="window.executeImportMerge(false)">إضافة للقائمة</button> <button class="btn btn-warning" style="background:var(--warning);" onclick="window.executeImportMerge(true)">استبدال القائمة</button>`, 'console.log("handled in buttons")'); }
+                    if(c>0){ window.tempNewStudents=ns; window.showCustomConfirm(`وجدنا عدد ${c} طالب. هل تريد استبدال القائمة أم الإضافة إليها؟<br><br><button class="modal-btn" style="background:var(--success);" onclick="window.executeImportMerge(false)">إضافة للقائمة</button> <br><button class="modal-btn" style="background:var(--warning); margin-top:10px;" onclick="window.executeImportMerge(true)">استبدال القائمة</button>`, 'console.log("handled in buttons")'); }
                     else{ window.showCustomAlert('لا توجد بيانات صالحة في الملف.'); } 
                 }catch(err){window.showCustomAlert('حدث خطأ في قراءة ملف الإكسل.');} 
             }; 
@@ -1367,6 +1367,9 @@
         };
 
         window.openPdfPrintModal = () => { document.getElementById('pdfPrintModal').classList.add('active'); }; 
+        
+        window.executePdfDownload = () => { const btn=document.getElementById('pdfDownloadBtn'); const orig=btn.innerHTML; btn.innerHTML='⏳ جاري التحميل...'; btn.disabled=true; const div=document.createElement('div'); div.innerHTML=window.getGeneralReportHTML(); html2pdf().set({margin:[10,10,10,10],filename:'تقرير_الحضور_الشامل.pdf',html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'}}).from(div).save().then(()=>{btn.innerHTML=orig;btn.disabled=false;window.closeModals();}); };
+        
         window.exportGeneralReportToWord = () => { 
             const d=new Date().toLocaleDateString('ar-SA'); let rows=''; 
             window.filteredStudents.forEach((s,i)=>{ 
@@ -1377,10 +1380,13 @@
             const c=`<h1 style="color:#4f46e5; font-family:'Tajawal', sans-serif;">التقرير الشامل للحضور والغياب</h1><p style="text-align:center; font-size:14pt; color:#64748b; font-family:'Tajawal', sans-serif;">التاريخ: ${d}</p><table style="width:100%; border-collapse:collapse; text-align:center; font-family:'Tajawal', sans-serif;"><tr style="background:#f1f5f9;"><th style="border: 1px solid #cbd5e1; padding: 10px;">م</th><th style="border: 1px solid #cbd5e1; padding: 10px;">اسم الطالب</th><th style="border: 1px solid #cbd5e1; padding: 10px;">رقم الجوال</th><th style="border: 1px solid #cbd5e1; padding: 10px;">الصف الدراسي</th><th style="border: 1px solid #cbd5e1; padding: 10px;">حالة اليوم</th><th style="border: 1px solid #cbd5e1; padding: 10px;">وقت الرصد</th></tr>${rows}</table>`; 
             const w=getWordWrapper('التقرير الشامل',c); const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download='التقرير_الشامل.doc'; l.click(); window.closeModals(); 
         };
+
         window.executeDirectPrint = () => { window.closeModals(); const p=document.getElementById('printArea'); p.innerHTML=window.getGeneralReportHTML(); document.body.classList.add('printing-card'); setTimeout(()=>{window.print(); document.body.classList.remove('printing-card'); p.innerHTML='';},300); };
+        
         window.getGeneralReportHTML = () => { const d=new Date().toLocaleDateString('ar-SA'); let rows=''; window.filteredStudents.forEach((s,i)=>{ let c='#64748b',t='لم يسجل'; if(s.status==='present'){c='#10b981';t='حاضر';}else if(s.status==='absent'){c='#ef4444';t='غائب';}else if(s.status==='late'){c='#f59e0b';t='متأخر';}else if(s.status==='excused'){c='#0ea5e9';t='بعذر';} rows+=`<tr><td style="padding:10px;border:1px solid #e2e8f0;">${i+1}</td><td style="padding:10px;border:1px solid #e2e8f0;font-weight:bold;text-align:right;">${s.name}</td><td style="padding:10px;border:1px solid #e2e8f0;" dir="ltr">${s.phone}</td><td style="padding:10px;border:1px solid #e2e8f0;">${s.class}</td><td style="padding:10px;border:1px solid #e2e8f0;color:${c};font-weight:bold;">${t}</td><td style="padding:10px;border:1px solid #e2e8f0;" dir="ltr">${s.time}</td></tr>`; }); return `<div style="direction:rtl;font-family:sans-serif;padding:20px;"><h2 style="text-align:center;color:#4f46e5;border-bottom:2px solid #6366f1;padding-bottom:10px;margin-bottom:20px;">تقرير الحضور والغياب اليومي للمدرسة (${d})</h2><table style="width:100%;border-collapse:collapse;text-align:center;font-size:14px;"><thead><tr style="background:#f1f5f9;"><th style="padding:12px;border:1px solid #e2e8f0;">م</th><th style="padding:12px;border:1px solid #e2e8f0;">الاسم الرباعي</th><th style="padding:12px;border:1px solid #e2e8f0;">رقم الجوال</th><th style="padding:12px;border:1px solid #e2e8f0;">الصف</th><th style="padding:12px;border:1px solid #e2e8f0;">الحالة</th><th style="padding:12px;border:1px solid #e2e8f0;">وقت الرصد</th></tr></thead><tbody>${rows}</tbody></table></div>`; };
 
         window.openStudentModal = () => { const sel=document.getElementById('studentSelectDropdown'); sel.innerHTML='<option value="">-- يرجى الاختيار --</option>'; window.students.forEach(s=>sel.innerHTML+=`<option value="${s.id}">${s.name}</option>`); document.getElementById('studentModal').classList.add('active'); };
+        
         window.previewStudentReport = id => { 
             if(!id){window.hideEl('reportCaptureArea');window.hideEl('captureStudentReportBtn');window.hideEl('draftAiBtn');return;} 
             const s=window.students.find(x=>x.id===id); 
@@ -1398,6 +1404,7 @@
         };
         
         window.captureStudentReport = () => { const a=document.getElementById('reportCaptureArea'); const b=document.getElementById('captureStudentReportBtn'); const o=b.innerHTML; b.innerHTML='⏳ جاري الالتقاط...'; html2canvas(a,{scale:2,useCORS:true,backgroundColor:'#ffffff'}).then(c=>{ const l=document.createElement('a'); l.download='اشعار_الطالب.png'; l.href=c.toDataURL(); l.click(); b.innerHTML=o; window.showCustomAlert('تم حفظ صورة التقرير في جهازك بنجاح! 📸'); }); };
+        
         window.draftParentMessage = () => { const s=document.getElementById('sr-name').innerText, st=document.getElementById('sr-status')?.innerText||'غائب', a=document.getElementById('sr-absences').innerText; window.showEl('aiLoadingIndicator'); window.hideEl('aiMessageResult'); const p=`أنت موجه طلابي. صغ رسالة واتساب قصيرة وودودة جداً لولي أمر الطالب "${s}" لإخباره أن ابنه مُسجل كـ "${st}" اليوم وأن إجمالي غيابه التراكمي أصبح ${a}.`; window.fetchGeminiWithBackoff(p).then(t=>{window.hideEl('aiLoadingIndicator');window.showEl('aiMessageResult');window.setTxt('aiMessageText',t);}); };
         window.copyAiMessage = () => { const t=document.createElement('textarea'); t.value=document.getElementById('aiMessageText').innerText; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); window.showCustomAlert('تم نسخ نص الرسالة بنجاح! جاهزة للإرسال.'); };
 
@@ -1406,7 +1413,6 @@
         
         window.exportRiskReportToWord = () => { 
             const c=document.getElementById('riskContent').innerHTML; 
-            // Add styling for word
             const formattedContent = c.replace(/<table/g, '<table style="width:100%; border-collapse:collapse; margin-top:15px; font-family:\'Tajawal\', sans-serif;" border="1"').replace(/<th/g, '<th style="padding:12px; background:#f8fafc; color:#1e293b;"').replace(/<td/g, '<td style="padding:12px;"');
             const w=getWordWrapper('المنذرين',`<h1 style="color:#e11d48; font-family:'Tajawal', sans-serif;">تقرير الطلاب المنذرين إرشادياً</h1>${formattedContent}`); 
             const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download='تقرير_المنذرين.doc'; l.click(); 
@@ -1415,6 +1421,7 @@
         window.openBehaviorModal = () => { const c=document.getElementById('behaviorClassSelect'); c.innerHTML='<option value="">-- اختر الفصل --</option>'; [...new Set(window.students.map(s=>s.class))].sort().forEach(cl=>c.innerHTML+=`<option value="${cl}">${cl}</option>`); document.getElementById('behaviorModal').classList.add('active'); };
         window.populateBehaviorStudents = () => { const c=document.getElementById('behaviorClassSelect').value; const s=document.getElementById('behaviorStudentSelect'); s.innerHTML='<option value="">-- اختر الطالب المعني --</option>'; window.students.filter(x=>x.class===c).forEach(x=>s.innerHTML+=`<option value="${x.id}">${x.name}</option>`); };
         window.analyzeBehavior = () => { const sid=document.getElementById('behaviorStudentSelect').value; const desc=document.getElementById('behaviorDescription').value; if(!sid||!desc)return window.showCustomAlert('الرجاء تحديد الطالب المعني وكتابة وصف المشكلة أولاً.'); window.showEl('behaviorLoading'); window.hideEl('behaviorResultContainer'); window.fetchGeminiWithBackoff(`أنت لجنة التوجيه الطلابي في مدرسة سعودية. قم بتصنيف هذه المشكلة السلوكية واقترح الإجراء النظامي التربوي السليم والمباشر بناءً على دليل السلوك والمواظبة: "${desc}"`).then(t=>{window.hideEl('behaviorLoading');window.showEl('behaviorResultContainer');document.getElementById('behaviorResult').innerHTML=window.formatMarkdown(t);}); };
+        
         window.exportBehaviorToWord = () => { 
             const r=document.getElementById('behaviorResult').innerHTML; 
             const w=getWordWrapper('محضر مشكلة سلوكية',`<h1 style="color:#d97706; font-family:'Tajawal', sans-serif;">محضر دراسة مشكلة سلوكية</h1><div style="background:#fffbeb; padding:20px; border:2px solid #fcd34d; border-radius:10px; text-align:right; font-family:'Tajawal', sans-serif; font-size:14pt; line-height:1.8;">${r}</div>`); 
@@ -1423,7 +1430,7 @@
 
         window.checkAndAlertForExcuses = s => { 
             if (!window.sessionAlerts) window.sessionAlerts = {};
-            if (window.sessionAlerts[s.id]) return; // منع تكرار ظهور التنبيهات في نفس الجلسة
+            if (window.sessionAlerts[s.id]) return; 
             
             const hs=JSON.parse(localStorage.getItem(window.HISTORY_KEY))||{}; 
             const ex=JSON.parse(localStorage.getItem(window.EXCUSES_KEY))||[]; 
@@ -1468,7 +1475,7 @@
                 
                 if(msgs.length > 0) {
                     window.showCustomAlert(msgs.join('<br><br><hr style="border:0; border-top:1px solid #e2e8f0; margin:15px 0;">'));
-                    window.sessionAlerts[s.id] = true; // تسجيل أنه تم عرض الرسالة في هذه الجلسة للطالب
+                    window.sessionAlerts[s.id] = true; 
                 }
             },800); 
         };
