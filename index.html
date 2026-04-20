@@ -646,17 +646,19 @@
         };
         // --------------------------------
 
+        window.closeAlert = () => { const m = document.getElementById('customAlertModal'); if(m) m.classList.remove('active'); };
+
         window.showCustomAlert = (msg, type = 'info') => { 
             window.setTxt('customAlertTitle', 'تنبيه النظام'); 
             document.getElementById('customAlertMessage').innerHTML = msg; 
-            document.getElementById('customAlertButtons').innerHTML = `<button class="modal-btn" style="width: 100%;" onclick="window.closeModals()">موافق، فهمت</button>`; 
+            document.getElementById('customAlertButtons').innerHTML = `<button class="modal-btn" style="width: 100%;" onclick="window.closeAlert()">موافق، فهمت</button>`; 
             document.getElementById('customAlertModal').classList.add('active'); 
         };
         
         window.showCustomConfirm = (msg, func) => { 
             window.setTxt('customAlertTitle', 'تأكيد الإجراء'); 
             window.setTxt('customAlertMessage', msg); 
-            document.getElementById('customAlertButtons').innerHTML = `<button class="modal-btn" style="flex:1; background: var(--danger); box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);" onclick="window.closeModals(); ${func}">نعم، متأكد</button><button class="modal-btn" style="flex:1; background: var(--text-muted); box-shadow: none;" onclick="window.closeModals()">إلغاء</button>`; 
+            document.getElementById('customAlertButtons').innerHTML = `<button class="modal-btn" style="flex:1; background: var(--danger); box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);" onclick="window.closeAlert(); ${func}">نعم، متأكد</button><button class="modal-btn" style="flex:1; background: var(--text-muted); box-shadow: none;" onclick="window.closeAlert()">إلغاء</button>`; 
             document.getElementById('customAlertModal').classList.add('active'); 
         };
 
@@ -1199,46 +1201,95 @@
         
         window.openExcuseForm = d => { document.getElementById('excuseDateInput').value=d||window.getTodayString(); document.getElementById('studentExcuseModal').classList.add('active'); };
         
-        window.submitStudentExcuse = () => {
-            const d=document.getElementById('excuseDateInput').value, t=document.getElementById('excuseTypeSelect').value, desc=document.getElementById('excuseDescInput').value, f=document.getElementById('excuseFileInput');
+        window.submitStudentExcuse = async () => {
+            const d=document.getElementById('excuseDateInput').value, 
+                  t=document.getElementById('excuseTypeSelect').value, 
+                  desc=document.getElementById('excuseDescInput').value, 
+                  f=document.getElementById('excuseFileInput');
+                  
             if(!d)return window.showCustomAlert('الرجاء تحديد تاريخ الغياب أو التأخير المطلوب تبريره.');
             if(!f.files || f.files.length === 0) return window.showCustomAlert('إرفاق المستند (صورة أو PDF) إلزامي جداً لإرسال العذر.');
             
             const file = f.files[0];
-            if (file.size > 700 * 1024) { // 700 KB
-                return window.showCustomAlert('حجم المرفق كبير جداً (أكبر من 700 كيلوبايت). يرجى تقليل جودة الصورة أو اختيار ملف PDF أصغر حجماً لضمان وصوله للإدارة بنجاح.');
+            if (file.size > 3 * 1024 * 1024) { 
+                return window.showCustomAlert('حجم المرفق كبير جداً (أكبر من 3 ميجابايت). يرجى تقليل جودة الصورة لضمان سرعة الإرسال.');
             }
             
-            const s=window.currentPortalStudents[window.activePortalStudentIndex]; let ex=JSON.parse(localStorage.getItem(window.EXCUSES_KEY))||[];
+            const s=window.currentPortalStudents[window.activePortalStudentIndex]; 
+            let ex=JSON.parse(localStorage.getItem(window.EXCUSES_KEY))||[];
             
-            const sv=(data,type)=>{
-                const btn = document.querySelector('#studentExcuseModal .modal-btn');
-                const origTxt = btn.innerHTML;
-                btn.innerHTML = 'جاري الإرسال... ⏳';
-                btn.disabled = true;
+            const btn = document.querySelector('#studentExcuseModal .modal-btn');
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = 'جاري عملية الإرسال... ⏳'; // تم التعديل هنا
+            btn.disabled = true;
+            
+            const reader = new FileReader(); 
+            reader.onload = async (e) => {
+                const base64Data = e.target.result;
+                const scriptUrl = "https://script.google.com/macros/s/AKfycbzKQEMUFaBXlFpKzOdqMDPsMrUtgjmk8ykWsHvFxTOutXTajmeN0A3Uk7DLH7Q5yNiT/exec";
                 
-                const newExcuse = {id:'EXC_'+Date.now(),studentId:s.id,studentName:s.name,date:d,type:t,desc:desc,file:data,fileType:type,status:'pending',notified:false};
-                
-                if (window.db && window.currentUser) { 
-                    setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'excuses', newExcuse.id), newExcuse)
-                    .then(()=>{
-                        btn.innerHTML = origTxt; btn.disabled = false;
-                        window.closeModals(); window.showCustomAlert('تم تقديم العذر وإرساله للإدارة بنجاح! شكراً لك.');
-                    }).catch(e=>{
-                        btn.innerHTML = origTxt; btn.disabled = false;
-                        window.showCustomAlert('حدث خطأ أثناء الإرسال. يرجى اختيار ملف أصغر والمحاولة مجدداً.');
+                try {
+                    // إرسال الملف إلى جوجل درايف
+                    const response = await fetch(scriptUrl, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            base64: base64Data,
+                            mimeType: file.type,
+                            fileName: `عذر_${s.name}_${d}_${file.name}`
+                        })
                     });
-                } else {
-                    ex.push(newExcuse);
-                    localStorage.setItem(window.EXCUSES_KEY,JSON.stringify(ex));
+                    
+                    const result = await response.json();
+                    
+                    if (result.status === 'success') {
+                        const fileUrl = result.url; // رابط جوجل درايف الجديد
+                        const newExcuse = {id:'EXC_'+Date.now(), studentId:s.id, studentName:s.name, date:d, type:t, desc:desc, file:fileUrl, fileType:file.type, status:'pending', notified:false};
+                        
+                        if (window.db && window.currentUser) { 
+                            await setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'excuses', newExcuse.id), newExcuse, { merge: true });
+                        } else {
+                            ex.push(newExcuse);
+                            localStorage.setItem(window.EXCUSES_KEY,JSON.stringify(ex));
+                        }
+                        
+                        btn.innerHTML = origTxt; btn.disabled = false;
+                        window.closeModals(); 
+                        window.showCustomAlert('تم تقديم العذر وإرساله للإدارة بنجاح! شكراً لك.'); 
+                        window.renderCurrentPortalTab();
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    console.error("Upload Error:", error);
                     btn.innerHTML = origTxt; btn.disabled = false;
-                    window.closeModals(); window.showCustomAlert('تم تقديم العذر محلياً بنجاح!'); window.renderCurrentPortalTab();
+                    window.showCustomAlert('حدث خطأ أثناء رفع الملف. يرجى المحاولة مرة أخرى.'); // تم التعديل هنا أيضاً
                 }
-            };
-            const r=new FileReader(); r.onload=e=>sv(e.target.result,file.type); r.readAsDataURL(file);
+            }; 
+            reader.readAsDataURL(file);
         };
 
-        window.viewExcuseAttachment = id => { const ex=JSON.parse(localStorage.getItem(window.EXCUSES_KEY))||[]; const e=ex.find(x=>x.id===id); if(!e||!e.file)return; const c=document.getElementById('attachmentContent'); c.innerHTML=(e.fileType&&e.fileType.includes('pdf'))?`<iframe src="${e.file}" style="width:100%;height:450px;border:none;border-radius:12px;"></iframe>`:`<img src="${e.file}" style="max-width:100%;max-height:450px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);">`; c.innerHTML+=`<br><a href="${e.file}" download="مرفق_العذر" class="btn btn-primary" style="margin-top:15px; width:100%;">تحميل المرفق للجهاز 📥</a>`; document.getElementById('attachmentModal').classList.add('active'); };
+        window.viewExcuseAttachment = id => { 
+            const ex=JSON.parse(localStorage.getItem(window.EXCUSES_KEY))||[]; 
+            const e=ex.find(x=>x.id===id); 
+            if(!e||!e.file)return; 
+            
+            const c=document.getElementById('attachmentContent'); 
+            c.innerHTML = '';
+            
+            // التحقق مما إذا كان الملف رابط جوجل درايف أم نظام قديم (Base64)
+            if (e.file.startsWith('http')) {
+                // تحويل رابط العرض إلى رابط معاينة ليعمل داخل النافذة
+                let previewUrl = e.file.includes('/view') ? e.file.replace(/\/view.*/, '/preview') : e.file;
+                c.innerHTML = `<iframe src="${previewUrl}" style="width:100%;height:450px;border:none;border-radius:12px;"></iframe>`;
+                c.innerHTML += `<br><a href="${e.file}" target="_blank" class="modal-btn" style="margin-top:15px; text-decoration:none; background: linear-gradient(135deg, #10b981, #059669);">فتح المرفق في نافذة جديدة (Google Drive) ↗️</a>`;
+            } else {
+                // توافقية مع الملفات القديمة المحفوظة بصيغة Base64
+                c.innerHTML=(e.fileType&&e.fileType.includes('pdf'))?`<iframe src="${e.file}" style="width:100%;height:450px;border:none;border-radius:12px;"></iframe>`:`<img src="${e.file}" style="max-width:100%;max-height:450px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);">`; 
+                c.innerHTML+=`<br><a href="${e.file}" download="مرفق_العذر" class="modal-btn" style="margin-top:15px;">تحميل المرفق للجهاز 📥</a>`; 
+            }
+            
+            document.getElementById('attachmentModal').classList.add('active'); 
+        };
 
         window.openTodayReportModal = () => { 
             const m=document.getElementById('todayReportModal'); 
