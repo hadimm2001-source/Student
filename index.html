@@ -81,6 +81,7 @@
         ========================================= */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(4px); } 
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        #customAlertModal { z-index: 999999 !important; }
         .modal-box { background: #fff; padding: 24px; border-radius: var(--radius-xl); width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: 0 15px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
         .modal-header h3 { font-size: 18px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; margin: 0; }
@@ -296,6 +297,7 @@
                     <button class="btn" style="background: var(--danger-light); color: #9f1239; border: 1px solid #fecdd3;" onclick="window.markBulk('absent')">الكل غائب ✗</button>
                 </div>
                 <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);" onclick="window.openAddStudent()">إضافة طالب ➕</button>
                     <button class="btn" style="background: linear-gradient(135deg, #f43f5e, #e11d48); color: white; box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2); position: relative;" onclick="window.openAdminExcusesModal()">
                         الأعذار 📩
                         <span id="pendingExcusesBadge" style="position: absolute; top: -8px; right: -8px; background: #ffb703; color: #78350f; font-size: 12px; font-weight: 800; width: 22px; height: 22px; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; display: none;">0</span>
@@ -311,7 +313,6 @@
                         <button class="dropdown-item" onclick="window.openStudentModal(); window.toggleDropdown();"><div class="dropdown-icon" style="background: #dbeafe; color: #3b82f6;">👤</div> تقرير بالطالب</button>
                         <button class="dropdown-item" onclick="window.openRiskModal(); window.toggleDropdown();"><div class="dropdown-icon" style="background: #ffe4e6; color: #e11d48;">⚠️</div> تقرير المنذرين</button>
                         <button class="dropdown-item" onclick="window.openPdfPrintModal(); window.toggleDropdown();"><div class="dropdown-icon" style="background: #fee2e2; color: #f43f5e;">📄</div> تقرير شامل PDF</button>
-                        <button class="dropdown-item" onclick="window.openBehaviorModal(); window.toggleDropdown();"><div class="dropdown-icon" style="background: #fef3c7; color: #d97706;">🛑</div> مشكلة سلوكية</button>
                         <button class="dropdown-item" onclick="document.getElementById('importExcel').click(); window.toggleDropdown();"><div class="dropdown-icon" style="background: #f1f5f9; color: #475569;">💻</div> استيراد إكسل</button>
                         <button class="dropdown-item" onclick="document.getElementById('restoreBackupInput').click(); window.toggleDropdown();"><div class="dropdown-icon" style="background: #f3e8ff; color: #9333ea;">🔄</div> استعادة نسخة</button>
                         <button class="dropdown-item" onclick="window.confirmDeleteAllData(); window.toggleDropdown();" style="color: var(--danger); border-top: 1px solid var(--danger-light); background: var(--danger-light);"><div class="dropdown-icon" style="background: transparent; color: var(--danger);">🗑️</div> مسح البيانات</button>
@@ -337,6 +338,28 @@
     <div id="printArea"></div>
 
     <!-- النوافذ المنبثقة (Modals) -->
+    <div id="addStudentModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 style="color: var(--primary);">إضافة طالب جديد</h3>
+                <button class="close-btn" onclick="window.closeModals()">&times;</button>
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label class="form-label">اسم الطالب:</label>
+                <input type="text" id="addStudentName" class="form-input" placeholder="أدخل اسم الطالب رباعياً">
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label class="form-label">الصف / الفصل:</label>
+                <input type="text" id="addStudentClass" class="form-input" placeholder="مثال: أول متوسط-أ">
+            </div>
+            <div class="input-group" style="margin-bottom: 25px;">
+                <label class="form-label">رقم الجوال:</label>
+                <input type="text" id="addStudentPhone" class="form-input" dir="ltr" placeholder="05XXXXXXXX">
+            </div>
+            <button class="modal-btn" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" onclick="window.saveNewStudent()">إضافة / حفظ ✅</button>
+        </div>
+    </div>
+
     <div id="editStudentModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 400px;">
             <div class="modal-header">
@@ -450,7 +473,7 @@
 
     <div id="riskModal" class="modal-overlay"><div class="modal-box" style="max-width: 650px;"><div class="modal-header"><h3 style="color: var(--danger);">تقرير الطلاب المنذرين ⚠️</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div id="riskContent" style="max-height: 350px; overflow-y: auto; padding-right: 5px;"></div><div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);"><button class="modal-btn" style="background: linear-gradient(135deg, #8b5cf6, #c084fc); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);" onclick="window.generateRiskActionPlan()">✨ توليد خطة تدخل إرشادية (AI)</button><div id="riskAiLoading" class="ai-loading" style="color: #8b5cf6;">جاري إعداد الخطة التربوية...</div><div id="riskAiResult" class="ai-box" style="max-height: 250px; overflow-y: auto; background: #faf5ff; border-color: #d8b4fe; color: #4c1d95;"></div></div><button class="modal-btn" style="background: linear-gradient(135deg, #f43f5e, #e11d48); margin-top: 20px;" onclick="window.exportRiskReportToWord()">استخراج التقرير بالكامل (Word) 📄</button></div></div>
 
-    <div id="behaviorModal" class="modal-overlay"><div class="modal-box" style="max-width: 600px;"><div class="modal-header"><h3 style="color: var(--warning); display: flex; align-items: center; gap: 8px;">🛑 تسجيل مشكلة سلوكية</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الفصل:</label><select id="behaviorClassSelect" class="form-select" onchange="window.populateBehaviorStudents()"><option value="">-- اختر --</option></select></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الطالب المعني:</label><select id="behaviorStudentSelect" class="form-select"><option value="">-- اختر الفصل أولاً --</option></select></div><div class="input-group" style="margin-bottom: 20px;"><label class="form-label">وصف المشكلة السلوكية:</label><textarea id="behaviorDescription" class="form-input" rows="4" placeholder="اكتب تفاصيل المخالفة هنا بدقة..."></textarea></div><div style="border: 2px dashed var(--border-color); padding: 20px; text-align: center; margin-bottom: 25px; border-radius: var(--radius-md); background: #f8fafc;"><p style="font-size:13px; color:var(--text-muted); margin-bottom:12px; font-weight:bold;">للحصول على التصنيف الدقيق، ارفق دليل المواظبة (اختياري)</p><input type="file" id="behaviorPdfInput" accept="application/pdf" style="display: none;" onchange="window.handleBehaviorPdfUpload(event)"><button class="modal-btn" style="background: linear-gradient(135deg, #64748b, #475569);" onclick="document.getElementById('behaviorPdfInput').click()">📥 إرفاق ملف الـ PDF</button></div><button class="modal-btn" style="background: var(--warning); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);" onclick="window.analyzeBehavior()">✨ تصنيف آلي واقتراح الإجراء</button><div id="behaviorLoading" class="ai-loading" style="color: var(--warning);">جاري مطابقة الحالة مع الدليل...</div><div id="behaviorResultContainer" style="display: none; margin-top: 20px;"><div id="behaviorResult" class="ai-box" style="display: block; background: #fffbeb; border-color: #fcd34d; color: #92400e; max-height: 250px; overflow-y:auto;"></div><button class="modal-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-top: 15px;" onclick="window.exportBehaviorToWord()">تصدير المحضر (Word) 📄</button></div></div></div>
+    <div id="behaviorModal" class="modal-overlay"><div class="modal-box" style="max-width: 600px;"><div class="modal-header"><h3 style="color: var(--warning); display: flex; align-items: center; gap: 8px;">🛑 تسجيل مشكلة سلوكية</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الفصل:</label><select id="behaviorClassSelect" class="form-select" onchange="window.populateBehaviorStudents()"><option value="">-- اختر --</option></select></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الطالب المعني:</label><select id="behaviorStudentSelect" class="form-select"><option value="">-- اختر الفصل أولاً --</option></select></div><div class="input-group" style="margin-bottom: 20px;"><label class="form-label">وصف المشكلة السلوكية:</label><textarea id="behaviorDescription" class="form-input" rows="4" placeholder="اكتب تفاصيل المخالفة هنا بدقة..."></textarea></div><div style="border: 2px dashed var(--border-color); padding: 20px; text-align: center; margin-bottom: 25px; border-radius: var(--radius-md); background: #f8fafc;"><p style="font-size:13px; color:var(--text-muted); margin-bottom:12px; font-weight:bold;">للحصول على التصنيف الدقيق، ارفق دليل المواظبة (اختياري)</p><input type="file" id="behaviorPdfInput" accept="application/pdf" style="display: none;" onchange="window.handleBehaviorPdfUpload(event)"><button id="behaviorPdfBtn" class="modal-btn" style="background: linear-gradient(135deg, #64748b, #475569);" onclick="document.getElementById('behaviorPdfInput').click()">📥 إرفاق ملف الـ PDF</button></div><button class="modal-btn" style="background: var(--warning); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);" onclick="window.analyzeBehavior()">✨ تصنيف آلي واقتراح الإجراء</button><div id="behaviorLoading" class="ai-loading" style="color: var(--warning);">جاري مطابقة الحالة مع الدليل...</div><div id="behaviorResultContainer" style="display: none; margin-top: 20px;"><div id="behaviorResult" class="ai-box" style="display: block; background: #fffbeb; border-color: #fcd34d; color: #92400e; max-height: 250px; overflow-y:auto;"></div><button class="modal-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-top: 15px;" onclick="window.exportBehaviorToWord()">تصدير المحضر (Word) 📄</button></div></div></div>
 
     <div id="bottomNotification" class="bottom-notification-bar">
         <div class="bn-content">
@@ -466,7 +489,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, deleteField } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, deleteField, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
         // إعدادات النظام والمتغيرات العامة
@@ -801,6 +824,46 @@
         window.deleteStudent = id => window.showCustomConfirm('هل أنت متأكد من حذف هذا الطالب نهائياً من القائمة؟', `window.executeDelete('${id}')`); 
         window.executeDelete = id => { window.students = window.students.filter(s=>s.id!==id); window.saveData(); window.setupClassFilter(); window.handleFilter(); };
         
+        // --- دالة إضافة طالب جديد ---
+        window.openAddStudent = () => {
+            document.getElementById('addStudentName').value = '';
+            document.getElementById('addStudentClass').value = '';
+            document.getElementById('addStudentPhone').value = '';
+            document.getElementById('addStudentModal').classList.add('active');
+        };
+
+        window.saveNewStudent = () => {
+            const name = document.getElementById('addStudentName').value.trim();
+            const sClass = document.getElementById('addStudentClass').value.trim();
+            const phone = document.getElementById('addStudentPhone').value.trim();
+
+            if(!name || !sClass || !phone) {
+                return window.showCustomAlert('الرجاء إكمال جميع البيانات الأساسية (الاسم، الصف، الجوال).');
+            }
+
+            const newStudent = {
+                id: 'ID_' + Date.now() + Math.floor(Math.random() * 1000),
+                name: name,
+                class: sClass,
+                phone: phone,
+                status: 'none',
+                time: '-',
+                absentCount: 0,
+                behaviorIssues: 0
+            };
+
+            window.students.unshift(newStudent); 
+            window.saveData();
+            window.setupClassFilter();
+            window.handleFilter();
+            window.closeModals();
+            window.showCustomAlert('تم إضافة الطالب بنجاح! ✅');
+            
+            if (window.db && window.currentUser) {
+                setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'shared_attendance', 'live_state'), { students: window.students }, { merge: true });
+            }
+        };
+
         window.openEditStudent = id => {
             const s = window.students.find(x => x.id === id);
             if (s) {
@@ -971,6 +1034,7 @@
                             `:`
                                 <span style="background:${e.status==='accepted'?'var(--success-light)':'var(--danger-light)'}; color:${e.status==='accepted'?'var(--success)':'var(--danger)'}; padding:6px 16px; border-radius:20px; font-weight:800; font-size:12px;">${e.status==='accepted'?'تم القبول ✅':'تم الرفض ❌'}</span> 
                                 <button class="btn btn-outline" style="padding:6px 12px; font-size:12px; border-color:var(--text-muted); color:var(--text-muted);" onclick="window.updateExcuseStatus('${e.id}','pending','${e.studentId}','${e.date}')">تراجع ↩</button>
+                                <button class="btn" style="padding:6px 12px; font-size:12px; background:var(--danger-light); color:var(--danger); border:none;" onclick="window.deleteExcuse('${e.id}')">حذف 🗑️</button>
                             `}
                         </div>
                     </div>
@@ -1000,6 +1064,24 @@
                 window.openAdminExcusesModal(); 
                 window.updateExcuseBadge();
             } 
+        };
+
+        window.deleteExcuse = eId => { window.showCustomConfirm('هل أنت متأكد من حذف هذا العذر نهائياً من السجل السحابي؟', `window.executeDeleteExcuse('${eId}')`); };
+        
+        window.executeDeleteExcuse = async eId => {
+            let ex = JSON.parse(localStorage.getItem(window.EXCUSES_KEY)) || [];
+            ex = ex.filter(x => x.id !== eId);
+            localStorage.setItem(window.EXCUSES_KEY, JSON.stringify(ex));
+            
+            if (window.db && window.currentUser) {
+                try {
+                    await deleteDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'excuses', eId));
+                } catch(err) { console.error(err); }
+            }
+            
+            window.openAdminExcusesModal();
+            window.updateExcuseBadge();
+            window.showCustomAlert('تم حذف العذر نهائياً من السجل ✅');
         };
 
         // ==========================================
@@ -1331,14 +1413,12 @@
             const reader = new FileReader(); 
             reader.onload = async (e) => {
                 if (isImage) {
-                    // نظام الضغط الذكي للصور قبل الإرسال لتجنب تعليق الجوالات
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         let width = img.width;
                         let height = img.height;
                         
-                        // تقليص الأبعاد إذا كانت عملاقة (أكبر من 1200 بيكسل)
                         const MAX_SIZE = 1200;
                         if (width > height && width > MAX_SIZE) {
                             height *= MAX_SIZE / width;
@@ -1353,7 +1433,6 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        // استخراج الصورة المضغوطة لتسريع الرفع (جودة 75%)
                         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
                         processAndUpload(compressedBase64, 'image/jpeg');
                     };
@@ -1374,14 +1453,11 @@
             const c=document.getElementById('attachmentContent'); 
             c.innerHTML = '';
             
-            // التحقق مما إذا كان الملف رابط جوجل درايف أم نظام قديم (Base64)
             if (e.file.startsWith('http')) {
-                // تحويل رابط العرض إلى رابط معاينة ليعمل داخل النافذة
                 let previewUrl = e.file.includes('/view') ? e.file.replace(/\/view.*/, '/preview') : e.file;
                 c.innerHTML = `<iframe src="${previewUrl}" style="width:100%;height:450px;border:none;border-radius:12px;"></iframe>`;
                 c.innerHTML += `<br><a href="${e.file}" target="_blank" class="modal-btn" style="margin-top:15px; text-decoration:none; background: linear-gradient(135deg, #10b981, #059669);">فتح المرفق في نافذة جديدة (Google Drive) ↗️</a>`;
             } else {
-                // توافقية مع الملفات القديمة المحفوظة بصيغة Base64
                 c.innerHTML=(e.fileType&&e.fileType.includes('pdf'))?`<iframe src="${e.file}" style="width:100%;height:450px;border:none;border-radius:12px;"></iframe>`:`<img src="${e.file}" style="max-width:100%;max-height:450px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);">`; 
                 c.innerHTML+=`<br><a href="${e.file}" download="مرفق_العذر" class="modal-btn" style="margin-top:15px;">تحميل المرفق للجهاز 📥</a>`; 
             }
@@ -1567,9 +1643,64 @@
             const b=new Blob(['\ufeff',w],{type:'application/msword'}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download='تقرير_المنذرين.doc'; l.click(); 
         };
 
-        window.openBehaviorModal = () => { const c=document.getElementById('behaviorClassSelect'); c.innerHTML='<option value="">-- اختر الفصل --</option>'; [...new Set(window.students.map(s=>s.class))].sort().forEach(cl=>c.innerHTML+=`<option value="${cl}">${cl}</option>`); document.getElementById('behaviorModal').classList.add('active'); };
+        // دالة تنسيق ردود الذكاء الاصطناعي
+        window.formatMarkdown = t => {
+            if (!t) return '';
+            return t.replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--primary);">$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/\n/g, '<br>');
+        };
+
+        window.openBehaviorModal = () => { 
+            const c=document.getElementById('behaviorClassSelect'); 
+            c.innerHTML='<option value="">-- اختر الفصل --</option>'; 
+            [...new Set(window.students.map(s=>s.class))].sort().forEach(cl=>c.innerHTML+=`<option value="${cl}">${cl}</option>`); 
+            document.getElementById('behaviorModal').classList.add('active'); 
+            window.behaviorPdfBase64 = null; // تفريغ الذاكرة
+            const btn = document.getElementById('behaviorPdfBtn');
+            if (btn) { 
+                btn.innerHTML = '📥 إرفاق ملف الـ PDF'; 
+                btn.style.background = 'linear-gradient(135deg, #64748b, #475569)'; 
+            }
+        };
+
+        // دالة رفع وقراءة الـ PDF للسلوكيات
+        window.handleBehaviorPdfUpload = e => {
+            const f = e.target.files[0];
+            if (!f) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                window.behaviorPdfBase64 = ev.target.result;
+                const btn = document.getElementById('behaviorPdfBtn');
+                if(btn){
+                    btn.innerHTML = `تم إرفاق: ${f.name.substring(0, 15)} ✅`;
+                    btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                }
+            };
+            reader.readAsDataURL(f);
+        };
+
         window.populateBehaviorStudents = () => { const c=document.getElementById('behaviorClassSelect').value; const s=document.getElementById('behaviorStudentSelect'); s.innerHTML='<option value="">-- اختر الطالب المعني --</option>'; window.students.filter(x=>x.class===c).forEach(x=>s.innerHTML+=`<option value="${x.id}">${x.name}</option>`); };
-        window.analyzeBehavior = () => { const sid=document.getElementById('behaviorStudentSelect').value; const desc=document.getElementById('behaviorDescription').value; if(!sid||!desc)return window.showCustomAlert('الرجاء تحديد الطالب المعني وكتابة وصف المشكلة أولاً.'); window.showEl('behaviorLoading'); window.hideEl('behaviorResultContainer'); window.fetchGeminiWithBackoff(`أنت لجنة التوجيه الطلابي في مدرسة سعودية. قم بتصنيف هذه المشكلة السلوكية واقترح الإجراء النظامي التربوي السليم والمباشر بناءً على دليل السلوك والمواظبة: "${desc}"`).then(t=>{window.hideEl('behaviorLoading');window.showEl('behaviorResultContainer');document.getElementById('behaviorResult').innerHTML=window.formatMarkdown(t);}); };
+        
+        window.analyzeBehavior = () => { 
+            const sid=document.getElementById('behaviorStudentSelect').value; 
+            const desc=document.getElementById('behaviorDescription').value; 
+            if(!sid||!desc) return window.showCustomAlert('الرجاء تحديد الطالب المعني وكتابة وصف المشكلة أولاً.'); 
+            
+            window.showEl('behaviorLoading'); 
+            window.hideEl('behaviorResultContainer'); 
+            
+            let parts = [{text: `أنت لجنة التوجيه الطلابي في مدرسة سعودية. قم بتصنيف هذه المشكلة السلوكية واقترح الإجراء النظامي التربوي السليم والمباشر بناءً على المعطيات: "${desc}"`}];
+            if(window.behaviorPdfBase64){ 
+                parts.push({inlineData: {mimeType: "application/pdf", data: window.behaviorPdfBase64.split(',')[1]}}); 
+            } 
+            
+            window.fetchGeminiWithBackoff(parts).then(t=>{
+                window.hideEl('behaviorLoading');
+                window.showEl('behaviorResultContainer');
+                document.getElementById('behaviorResult').innerHTML=window.formatMarkdown(t);
+            }); 
+        };
         
         window.exportBehaviorToWord = () => { 
             const r=document.getElementById('behaviorResult').innerHTML; 
@@ -1628,6 +1759,18 @@
                 }
             },800); 
         };
+
+        // ==========================================
+        // درع الحماية الأولي لمنع المتطفلين (Anti-Inspect)
+        // ==========================================
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', event => {
+            if (event.keyCode === 123 || 
+               (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 74)) || 
+               (event.ctrlKey && event.keyCode === 85)) {
+                event.preventDefault();
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', window.initApp);
     </script>
