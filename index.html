@@ -289,7 +289,7 @@
 
         <div class="controls-section">
             <div class="filters-row">
-                <div class="input-group" style="flex: 2;"><input type="text" id="searchInput" placeholder="البحث برقم الجوال أو اسم الطالب..." onkeyup="window.handleFilter()"></div>
+                <div class="input-group" style="flex: 2;"><input type="text" id="searchInput" placeholder="البحث برقم الجوال أو اسم الطالب أو السجل..." onkeyup="window.handleFilter()"></div>
                 <div class="input-group"><select id="classFilter" onchange="window.handleFilter()"><option value="all">جميع الفصول</option></select></div>
                 <div class="input-group"><select id="statusFilter" onchange="window.handleFilter()"><option value="all">جميع الحالات</option><option value="present">حاضر</option><option value="absent">غائب</option><option value="late">متأخر</option><option value="excused">بعذر</option><option value="none">لم يسجل</option></select></div>
             </div>
@@ -307,6 +307,7 @@
                     </button>
                     <button class="btn" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; box-shadow: 0 4px 10px rgba(109, 40, 217, 0.2);" onclick="window.backupData()">نسخ احتياطي 💾</button>
                     <button class="btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.2);" onclick="window.syncDirectly()">مزامنة 🔄</button>
+                    <button class="btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);" onclick="window.confirmResetMonth()">تصفير لشهر جديد 🔄</button>
                 </div>
                 <div class="dropdown">
                     <button class="btn" style="background: var(--text-main); color: white; height: 100%; box-shadow: 0 4px 10px rgba(30, 41, 59, 0.2);" onclick="window.toggleDropdown()">التقارير والأدوات ⚙️</button>
@@ -490,11 +491,9 @@
     
     <div id="pdfPrintModal" class="modal-overlay"><div class="modal-box"><div class="modal-header"><h3>التقرير الشامل للمدرسة</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;"><button onclick="window.executePdfDownload()" id="pdfDownloadBtn" class="modal-btn" style="background: linear-gradient(135deg, #f43f5e, #e11d48); box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);">تحميل نسخة PDF 📥</button><button onclick="window.exportGeneralReportToWord()" class="modal-btn" style="background: linear-gradient(135deg, #4f46e5, #4338ca); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">تصدير نسخة Word 📄</button><button onclick="window.executeDirectPrint()" class="modal-btn" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">طباعة مباشرة 🖨️</button></div></div></div>
 
-    <div id="studentModal" class="modal-overlay"><div class="modal-box" style="max-width: 550px;"><div class="modal-header"><h3>تقرير تفصيلي لطالب</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><label class="form-label" style="margin-bottom:8px;">ابحث واختر الطالب من القائمة:</label><select id="studentSelectDropdown" class="form-select" style="margin-bottom: 20px;" onchange="window.previewStudentReport(this.value)"><option value="">-- يرجى الاختيار --</option></select><div id="reportCaptureArea" style="background: white; padding: 15px; border-radius: var(--radius-lg); display: none; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);"><div id="studentReportCard" style="padding: 20px; border: 2px dashed var(--border-color); border-radius: var(--radius-md); background: #f8fafc; margin-bottom: 25px;"><h4 style="text-align:center; color:var(--primary); margin-bottom:20px; font-size:18px;">إشعار حالة حضور وانصراف</h4><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">الاسم:</span><strong id="sr-name" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">السجل المدني:</span><strong id="sr-nid" dir="ltr" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">الصف:</span><strong id="sr-class" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">الجوال:</span><strong id="sr-phone" dir="ltr" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">السمة الغالبة (الترند):</span><strong style="color:${trnd.col}; background:${trnd.bg}; padding:2px 8px; border-radius:12px; font-size:14px;">${trnd.txt}</strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">التاريخ:</span><strong id="sr-date" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">حالة اليوم:</span><strong id="sr-status" style="font-size:16px;"></strong></div><div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);font-weight:700;">تراكمي الغياب:</span><strong id="sr-absences" style="color:var(--danger);font-size:16px;"></strong></div></div><div id="studentJourney"><h4 style="font-size: 16px; margin-bottom: 15px; color: var(--text-main); font-weight:800;">سجل الانضباط الأخير:</h4><div class="d-timeline-wrapper" style="background:#1e1b4b; padding:30px 15px; border-radius:16px;"><div class="d-timeline"><div class="d-tl-line"></div><div class="d-tl-dots" id="sj-dots-path"></div></div></div></div></div><div style="display: flex; gap: 15px; margin-top: 25px;"><button id="captureStudentReportBtn" class="modal-btn" style="flex:1; background: var(--info); color: white; display:none; justify-content:center;" onclick="window.captureStudentReport()">حفظ كصورة 📸</button><button id="draftAiBtn" class="modal-btn" style="flex:1; background: #25d366; color: white; display:none; justify-content:center;" onclick="window.draftParentMessage()">رسالة واتساب ✨</button></div><div id="aiLoadingIndicator" class="ai-loading">جاري الصياغة الذكية...</div><div id="aiMessageResult" class="ai-box" style="display: none; background: #f0fdf4; border-color: #86efac;"><p id="aiMessageText" style="color: #166534; font-size: 15px; line-height: 1.6; margin-bottom: 15px;"></p><button class="modal-btn" style="background: linear-gradient(135deg, #166534, #14532d);" onclick="window.copyAiMessage()">نسخ النص 📋</button></div></div></div>
+    <div id="studentModal" class="modal-overlay"><div class="modal-box" style="max-width: 550px;"><div class="modal-header"><h3>تقرير تفصيلي لطالب</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><label class="form-label" style="margin-bottom:8px;">ابحث واختر الطالب من القائمة:</label><select id="studentSelectDropdown" class="form-select" style="margin-bottom: 20px;" onchange="window.previewStudentReport(this.value)"><option value="">-- يرجى الاختيار --</option></select><div id="reportCaptureArea" style="background: white; padding: 15px; border-radius: var(--radius-lg); display: none; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);"><div id="studentReportCard" style="padding: 20px; border: 2px dashed var(--border-color); border-radius: var(--radius-md); background: #f8fafc; margin-bottom: 25px;"><h4 style="text-align:center; color:var(--primary); margin-bottom:20px; font-size:18px;">إشعار حالة حضور وانصراف</h4><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">الاسم:</span><strong id="sr-name" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">السجل المدني:</span><strong id="sr-nid" dir="ltr" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">الصف:</span><strong id="sr-class" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">الجوال:</span><strong id="sr-phone" dir="ltr" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">السمة الغالبة (الترند):</span><strong id="sr-trend" style="padding:2px 8px; border-radius:12px; font-size:14px;"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">التاريخ:</span><strong id="sr-date" style="color:var(--text-main);"></strong></div><div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;"><span style="color:var(--text-muted);font-weight:700;">حالة اليوم:</span><strong id="sr-status" style="font-size:16px;"></strong></div><div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);font-weight:700;">تراكمي الغياب:</span><strong id="sr-absences" style="color:var(--danger);font-size:16px;"></strong></div></div><div id="studentJourney"><h4 style="font-size: 16px; margin-bottom: 15px; color: var(--text-main); font-weight:800;">سجل الانضباط الأخير:</h4><div class="d-timeline-wrapper" style="background:#1e1b4b; padding:30px 15px; border-radius:16px;"><div class="d-timeline"><div class="d-tl-line"></div><div class="d-tl-dots" id="sj-dots-path"></div></div></div></div></div><div style="display: flex; gap: 15px; margin-top: 25px;"><button id="captureStudentReportBtn" class="modal-btn" style="flex:1; background: var(--info); color: white; display:none; justify-content:center;" onclick="window.captureStudentReport()">حفظ كصورة 📸</button><button id="draftAiBtn" class="modal-btn" style="flex:1; background: #25d366; color: white; display:none; justify-content:center;" onclick="window.draftParentMessage()">رسالة واتساب ✨</button></div><div id="aiLoadingIndicator" class="ai-loading">جاري الصياغة الذكية...</div><div id="aiMessageResult" class="ai-box" style="display: none; background: #f0fdf4; border-color: #86efac;"><p id="aiMessageText" style="color: #166534; font-size: 15px; line-height: 1.6; margin-bottom: 15px;"></p><button class="modal-btn" style="background: linear-gradient(135deg, #166534, #14532d);" onclick="window.copyAiMessage()">نسخ النص 📋</button></div></div></div>
 
     <div id="riskModal" class="modal-overlay"><div class="modal-box" style="max-width: 650px;"><div class="modal-header"><h3 style="color: var(--danger);">تقرير الطلاب المنذرين ⚠️</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div id="riskContent" style="max-height: 350px; overflow-y: auto; padding-right: 5px;"></div><div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);"><button class="modal-btn" style="background: linear-gradient(135deg, #8b5cf6, #c084fc); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);" onclick="window.generateRiskActionPlan()">✨ توليد خطة تدخل إرشادية (AI)</button><div id="riskAiLoading" class="ai-loading" style="color: #8b5cf6;">جاري إعداد الخطة التربوية...</div><div id="riskAiResult" class="ai-box" style="max-height: 250px; overflow-y: auto; background: #faf5ff; border-color: #d8b4fe; color: #4c1d95;"></div></div><button class="modal-btn" style="background: linear-gradient(135deg, #f43f5e, #e11d48); margin-top: 20px;" onclick="window.exportRiskReportToWord()">استخراج التقرير بالكامل (Word) 📄</button></div></div>
-
-    <div id="behaviorModal" class="modal-overlay"><div class="modal-box" style="max-width: 600px;"><div class="modal-header"><h3 style="color: var(--warning); display: flex; align-items: center; gap: 8px;">🛑 تسجيل مشكلة سلوكية</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الفصل:</label><select id="behaviorClassSelect" class="form-select" onchange="window.populateBehaviorStudents()"><option value="">-- اختر --</option></select></div><div class="input-group" style="margin-bottom: 15px;"><label class="form-label">الطالب المعني:</label><select id="behaviorStudentSelect" class="form-select"><option value="">-- اختر الفصل أولاً --</option></select></div><div class="input-group" style="margin-bottom: 20px;"><label class="form-label">وصف المشكلة السلوكية:</label><textarea id="behaviorDescription" class="form-input" rows="4" placeholder="اكتب تفاصيل المخالفة هنا بدقة..."></textarea></div><div style="border: 2px dashed var(--border-color); padding: 20px; text-align: center; margin-bottom: 25px; border-radius: var(--radius-md); background: #f8fafc;"><p style="font-size:13px; color:var(--text-muted); margin-bottom:12px; font-weight:bold;">للحصول على التصنيف الدقيق، ارفق دليل المواظبة (اختياري)</p><input type="file" id="behaviorPdfInput" accept="application/pdf" style="display: none;" onchange="window.handleBehaviorPdfUpload(event)"><button id="behaviorPdfBtn" class="modal-btn" style="background: linear-gradient(135deg, #64748b, #475569);" onclick="document.getElementById('behaviorPdfInput').click()">📥 إرفاق ملف الـ PDF</button></div><button class="modal-btn" style="background: var(--warning); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);" onclick="window.analyzeBehavior()">✨ تصنيف آلي واقتراح الإجراء</button><div id="behaviorLoading" class="ai-loading" style="color: var(--warning);">جاري مطابقة الحالة مع الدليل...</div><div id="behaviorResultContainer" style="display: none; margin-top: 20px;"><div id="behaviorResult" class="ai-box" style="display: block; background: #fffbeb; border-color: #fcd34d; color: #92400e; max-height: 250px; overflow-y:auto;"></div><button class="modal-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-top: 15px;" onclick="window.exportBehaviorToWord()">تصدير المحضر (Word) 📄</button></div></div></div>
 
     <div id="bottomNotification" class="bottom-notification-bar">
         <div class="bn-content">
@@ -524,7 +523,6 @@
         window.db = null; 
         window.currentUser = null; 
         window.isRemoteUpdate = false; 
-        window.behaviorPdfBase64 = null;
         
         window.STORAGE_KEY = 'att_saas_data'; 
         window.HISTORY_KEY = 'att_saas_hist'; 
@@ -565,9 +563,6 @@
             return { txt: '📊 مستوى انضباط طبيعي', col: 'var(--text-main)', bg: '#f8fafc' };
         };
 
-        // ==========================================
-        // تحديث البادج الخاص بالأعذار
-        // ==========================================
         window.updateExcuseBadge = () => {
             const ex = JSON.parse(localStorage.getItem(window.EXCUSES_KEY)) || [];
             const pendingCount = ex.filter(e => e.status === 'pending').length;
@@ -582,9 +577,6 @@
             }
         };
 
-        // ==========================================
-        // اتصال بقاعدة بيانات (Firebase) الخاصة بك
-        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyCVdLikyOhh7wc29omVblZzNdEG3rakoeA",
             authDomain: "student-absence-8bb60.firebaseapp.com",
@@ -848,7 +840,6 @@
                 let c='#64748b', t='لم يسجل'; 
                 if(s.status==='present'){c='#10b981';t='حاضر';}else if(s.status==='absent'){c='#f43f5e';t='غائب';}else if(s.status==='late'){c='#f59e0b';t='متأخر';}else if(s.status==='excused'){c='#0ea5e9';t='بعذر';} 
                 
-                // جلب مؤشر السمة الغالبة (الترند)
                 const trnd = window.getStudentTrend(s.id);
                 const trendBadge = `<div style="font-size:11px; margin-top:4px; font-weight:800; color:${trnd.col}; background:${trnd.bg}; display:inline-block; padding:2px 8px; border-radius:12px;">${trnd.txt}</div>`;
                 
@@ -1033,6 +1024,48 @@
         };
         
         window.confirmDeleteAllData = () => window.showCustomConfirm('هل أنت متأكد من مسح جميع البيانات نهائياً؟ لا يمكن التراجع عن هذا الإجراء!', 'window.executeDeleteAllData()');
+
+        // --- دالة تصفير الشهر الجديد ---
+        window.executeResetMonth = async () => {
+            // 1. جلب الأعذار الحالية لحذفها من السحابة
+            const currentExcuses = JSON.parse(localStorage.getItem(window.EXCUSES_KEY)) || [];
+
+            // 2. تصفير عدادات الغياب والحالة والوقت للطلاب مع الاحتفاظ بأسمائهم
+            window.students = window.students.map(s => ({
+                ...s,
+                status: 'none',
+                time: '-',
+                absentCount: 0
+            }));
+            
+            // 3. مسح السجل اليومي والأعذار من التخزين المحلي
+            localStorage.setItem(window.HISTORY_KEY, JSON.stringify({})); 
+            localStorage.setItem(window.EXCUSES_KEY, JSON.stringify([])); 
+            
+            window.saveData(); 
+            window.setupClassFilter(); 
+            window.handleFilter(); 
+            window.updateExcuseBadge();
+            window.closeAlert(); 
+            
+            // 4. تحديث السحابة وحذف الأعذار نهائياً
+            if(window.db && window.currentUser) {
+                // تصفير الحالات في السحابة
+                await setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'shared_attendance', 'live_state'), { 
+                    students: window.students, 
+                    history: {}
+                }, { merge: true });
+
+                // حذف جميع الأعذار من قاعدة البيانات السحابية (Firebase)
+                currentExcuses.forEach(excuse => {
+                    deleteDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'excuses', excuse.id)).catch(e => console.error("خطأ في حذف العذر:", e));
+                });
+            }
+
+            window.showCustomAlert('تم تصفير الغيابات ومسح جميع الأعذار السابقة بنجاح! بداية شهر موفق إن شاء الله 🎉'); 
+        };
+
+        window.confirmResetMonth = () => window.showCustomConfirm('هل أنت متأكد من رغبتك في تصفير جميع (غيابات وتأخيرات) الطلاب ومسح جميع الأعذار لبدء شهر جديد؟', 'window.executeResetMonth()');
 
         const apiKey = "";
         window.fetchGeminiWithBackoff = async (p, retries=5) => { 
@@ -1395,6 +1428,27 @@
             window.hideEl('studentPortalView'); 
             window.showEl('loginPortal','flex'); 
             window.switchLoginTab('student'); 
+        };
+
+        window.checkAndAlertForExcuses = s => {
+            let ex = JSON.parse(localStorage.getItem(window.EXCUSES_KEY)) || [];
+            let unnotified = ex.filter(e => e.studentId === s.id && e.status !== 'pending' && !e.notified);
+            
+            if (unnotified.length > 0) {
+                window.showCustomAlert('تنبيه: تمت مراجعة وتحديث حالة بعض الأعذار التي قمت بتقديمها. يرجى الاطلاع على قسم الأعذار.');
+                
+                unnotified.forEach(u => {
+                    let idx = ex.findIndex(x => x.id === u.id);
+                    if (idx > -1) ex[idx].notified = true;
+                });
+                localStorage.setItem(window.EXCUSES_KEY, JSON.stringify(ex));
+                
+                if (window.db && window.currentUser) {
+                    unnotified.forEach(u => {
+                        setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'excuses', u.id), { notified: true }, { merge: true }).catch(err => console.error(err));
+                    });
+                }
+            }
         };
 
         window.renderParentPortalWrapper = () => { 
@@ -2072,7 +2126,6 @@
                     stEl.style.color = color; 
                 }
 
-                // إضافة السمة الغالبة للتقرير التفصيلي
                 const trnd = window.getStudentTrend(id);
                 
                 window.showEl('reportCaptureArea'); 
@@ -2096,7 +2149,6 @@
                     dp.innerHTML=th; 
                 }
                 
-                // تحديث كود التقرير ليتضمن الترند
                 document.getElementById('studentReportCard').innerHTML=`
                     <h4 style="text-align:center; color:var(--primary); margin-bottom:20px; font-size:18px;">إشعار حالة حضور وانصراف</h4>
                     <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;">
@@ -2302,61 +2354,6 @@
             l.click(); 
         };
 
-        window.checkAndAlertForExcuses = s => { 
-            if (!window.sessionAlerts) window.sessionAlerts = {};
-            if (window.sessionAlerts[s.id]) return; 
-            
-            const hs=JSON.parse(localStorage.getItem(window.HISTORY_KEY))||{}; 
-            const ex=JSON.parse(localStorage.getItem(window.EXCUSES_KEY))||[]; 
-            const td=window.getTodayString(); 
-            const alertAbsentKey = `alerted_absent_${s.id}_${td}`; 
-            const alertLateKey = `alerted_late_${s.id}_${td}`; 
-            
-            let alertDays=0; 
-            Object.keys(hs).forEach(d=>{ 
-                const r=hs[d].find(x=>x.id===s.id); 
-                if(r&&r.status==='absent'&&!ex.some(e=>e.studentId===s.id&&e.date===d)) alertDays++; 
-            }); 
-            
-            setTimeout(()=>{ 
-                let msgs = [];
-                
-                if(alertDays>0 && !localStorage.getItem(alertAbsentKey)) { 
-                    msgs.push(`تنبيه هام: لديك ${alertDays} يوم غياب لم ترفع لها مبرراً. يرجى المبادرة برفع مبرر غيابك لتلافي الحسم من درجات المواظبة.`); 
-                    localStorage.setItem(alertAbsentKey, 'true');
-                } 
-                
-                let upd=false; 
-                ex.filter(e=>e.studentId===s.id).forEach(e=>{ 
-                    if((e.status==='accepted'||e.status==='rejected')&&!e.notified){ 
-                        msgs.push(e.status==='accepted'?`إشعار إدارة المدرسة: تم قبول عذرك ليوم ${e.date} بنجاح ✅`:`إشعار إدارة المدرسة: نعتذر، تم رفض عذرك ليوم ${e.date} ❌. يمكنك مراجعة المدرسة أو إعادة التقديم من سجل الحضور.`); 
-                        e.notified=true; 
-                        upd=true; 
-                        if(window.db && window.currentUser) {
-                            setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'excuses', e.id), { notified: true }, { merge: true });
-                        }
-                    } 
-                }); 
-                if(upd) localStorage.setItem(window.EXCUSES_KEY,JSON.stringify(ex)); 
-                
-                if(hs[td]){ 
-                    const tr=hs[td].find(x=>x.id===s.id); 
-                    if(tr&&tr.status==='late' && !localStorage.getItem(alertLateKey)) { 
-                        msgs.push('عزيزي الطالب، تم رصد تأخرك الصباحي لهذا اليوم. نأمل منك الحرص التام على الحضور المبكر دعماً لمسيرتك التعليمية ⏱️'); 
-                        localStorage.setItem(alertLateKey, 'true');
-                    } 
-                } 
-                
-                if(msgs.length > 0) {
-                    window.showCustomAlert(msgs.join('<br><br><hr style="border:0; border-top:1px solid #e2e8f0; margin:15px 0;">'));
-                    window.sessionAlerts[s.id] = true; 
-                }
-            },800); 
-        };
-
-        // ==========================================
-        // درع الحماية الأولي لمنع المتطفلين (Anti-Inspect)
-        // ==========================================
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.addEventListener('keydown', event => {
             if (event.keyCode === 123 || 
