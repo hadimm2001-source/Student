@@ -1,6 +1,44 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام معالجة المشكلات السلوكية | مدرسة الجشة</title>
+
+    <!-- الوصف الذي سيظهر في الواتساب ومحركات البحث بدلاً من الأكواد -->
+    <meta name="description" content="نظام إلكتروني لمتابعة ومعالجة المشكلات السلوكية للطلاب. نأمل منكم المتابعة المستمرة دعماً لانضباط الطالب.">
+
+    <!-- إعدادات الواتساب ووسائل التواصل (Open Graph) التي تمنع ظهور الكود -->
+    <meta property="og:title" content="نظام معالجة المشكلات السلوكية | مدرسة الجشة" />
+    <meta property="og:description" content="اضغط هنا للدخول على الصفحة. نأمل منكم المتابعة المستمرة دعماً لانضباط الطالب." />
+    <meta property="og:url" content="https://hadimm2001-source.github.io" />
+    <meta property="og:type" content="website" />
+
+    <!-- يمكنك إضافة رابط لشعار المدرسة ليظهر كصورة مصغرة بجانب الرابط في الواتساب -->
+    <!-- <meta property="og:image" content="رابط_الصورة_هنا.jpg" /> -->
+
+    <!-- هنا تضع روابط الخطوط (مثل خط تجوال) ومكتبة تحويل PDF وملفات الستايل الخاصة بك -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --marine-grass: #16a085;
+            --green-main: #27ae60;
+            /* ... بقية المتغيرات الخاصة بك ... */
+        }
+        
+        body {
+            font-family: 'Tajawal', Tahoma, sans-serif;
+            /* ... بقية الستايل ... */
+        }
+    </style>
+</head>
+<body>
+<!-- محتوى الصفحة هنا -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام إدارة الحضور والغياب (الموجه الطلابي)</title>
@@ -1391,7 +1429,7 @@
         
         window.checkAdminLogin = () => { 
             const p=document.getElementById('adminPassword'); 
-            if(p.value==='hadi'){ 
+            if(p.value==='hadi@'){ 
                 p.value=''; 
                 window.hideEl('loginPortal'); 
                 window.showEl('appContainer'); 
