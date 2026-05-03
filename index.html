@@ -1,57 +1,25 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> |نظام إدارة الحضور والغياب | مدرسة الجشة</title>
+    <title>نظام إدارة الحضور والغياب | مدرسة الجشة</title>
 
-    <!-- الوصف الذي سيظهر في الواتساب ومحركات البحث بدلاً من الأكواد -->
     <meta name="description" content="نظام إلكتروني لمتابعة ومعالجة المشكلات السلوكية للطلاب. نأمل منكم المتابعة المستمرة دعماً لانضباط الطالب.">
-
-    <!-- إعدادات الواتساب ووسائل التواصل (Open Graph) التي تمنع ظهور الكود -->
-    <meta property="og:title" content="|نظام إدارة الحضور والغياب | مدرسة الجشة" />
+    <meta property="og:title" content="نظام إدارة الحضور والغياب | مدرسة الجشة" />
     <meta property="og:description" content="اضغط هنا للدخول على الصفحة. نأمل منكم المتابعة المستمرة دعماً لانضباط الطالب." />
     <meta property="og:url" content="https://hadimm2001-source.github.io" />
     <meta property="og:type" content="website" />
 
-    <!-- يمكنك إضافة رابط لشعار المدرسة ليظهر كصورة مصغرة بجانب الرابط في الواتساب -->
-    <!-- <meta property="og:image" content="رابط_الصورة_هنا.jpg" /> -->
-
-    <!-- هنا تضع روابط الخطوط (مثل خط تجوال) ومكتبة تحويل PDF وملفات الستايل الخاصة بك -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-    <style>
-        :root {
-            --marine-grass: #16a085;
-            --green-main: #27ae60;
-            /* ... بقية المتغيرات الخاصة بك ... */
-        }
-        
-        body {
-            font-family: 'Tajawal', Tahoma, sans-serif;
-            /* ... بقية الستايل ... */
-        }
-    </style>
-</head>
-<body>
-<!-- محتوى الصفحة هنا -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الحضور والغياب (الموجه الطلابي)</title>
-    <!-- مكتبات التصدير والاستيراد -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
         /* =========================================
            1. إعدادات عامة (Reset & Variables)
         ========================================= */
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
-
         :root {
             --bg-body: #f8fafc; --bg-card: #ffffff; --text-main: #1e293b; --text-muted: #64748b; --border-color: #e2e8f0;
             --primary: #4f46e5; --primary-hover: #4338ca; --primary-light: #e0e7ff;
@@ -390,6 +358,22 @@
     <div id="printArea"></div>
 
     <!-- النوافذ المنبثقة (Modals) -->
+    
+    <!-- نافذة التنبيه بوجود غياب للطالب -->
+    <div id="absenceAlertModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 450px; text-align: center; border-top: 5px solid var(--danger);">
+            <div style="width: 70px; height: 70px; background: var(--danger-light); color: var(--danger); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+                <svg width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 style="color: var(--text-main); font-size: 22px; font-weight: 800; margin-bottom: 10px;">تنبيه بوجود غياب رُصد لك!</h3>
+            <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 25px; line-height: 1.6;">عزيزي الطالب، لاحظنا وجود غياب مسجل في سجلك. يرجى الانتقال إلى قسم <strong style="color: var(--danger);">الأعذار والمبررات</strong> لرفع عذرك في أقرب وقت لتفادي الخصم من درجات الانضباط.</p>
+            <div style="display: flex; gap: 10px; flex-direction: column; sm:flex-direction: row;">
+                <button class="modal-btn" style="flex: 1; background: var(--danger); box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);" onclick="window.goToExcusesSection()">رفع عذر الآن 📎</button>
+                <button class="modal-btn" style="flex: 1; background: #f1f5f9; color: var(--text-main); box-shadow: none;" onclick="window.closeAbsenceAlert()">تذكيري لاحقاً</button>
+            </div>
+        </div>
+    </div>
+
     <div id="addStudentModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 400px;">
             <div class="modal-header">
@@ -1489,6 +1473,36 @@
             }
         };
 
+        // --- دوال التحقق من الغياب وإظهار الرسالة (تم نقلها للملف الأساسي) ---
+        window.checkAndShowAbsenceAlert = (studentData) => {
+            if (!studentData) return;
+
+            const isAbsentToday = studentData.status === 'absent';
+            const hasUnjustifiedAbsence = studentData.absentCount > 0;
+            const alertAlreadyShown = sessionStorage.getItem('absenceAlertShown');
+
+            if ((isAbsentToday || hasUnjustifiedAbsence) && !alertAlreadyShown) {
+                const modal = document.getElementById('absenceAlertModal');
+                if (modal) {
+                    modal.classList.add('active');
+                    sessionStorage.setItem('absenceAlertShown', 'true');
+                }
+            }
+        };
+
+        window.closeAbsenceAlert = () => {
+            const modal = document.getElementById('absenceAlertModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        };
+
+        window.goToExcusesSection = () => {
+            window.closeAbsenceAlert(); 
+            window.switchPortalNav('excuses'); 
+        };
+        // ----------------------------------------------------------------------
+
         window.renderParentPortalWrapper = () => { 
             const s=window.currentPortalStudents[window.activePortalStudentIndex]; 
             let t=''; 
@@ -1537,6 +1551,7 @@
             
             window.renderCurrentPortalTab(); 
             window.checkAndAlertForExcuses(s); 
+            window.checkAndShowAbsenceAlert(s); // استدعاء الرسالة المنبثقة هنا
         };
         
         window.switchPortalStudent = i => { window.activePortalStudentIndex=i; window.renderParentPortalWrapper(); }; 
@@ -1594,7 +1609,9 @@
                 else if (rToday.status === 'excused') { todayStatusTxt = "غياب (بعذر مقبول)"; todayStatusColor = "var(--info)"; todayStatusBg = "var(--info-light)"; todayIcon = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>'; }
             }
             
-            const tp=Math.max(100-(un+l),0); 
+            // خصم الغياب بدون عذر فقط من النقاط الكلية
+            const tp=Math.max(100-un,0); 
+            
             const totalActiveDays = p + a + l + e;
             const attPercentage = totalActiveDays > 0 ? Math.round(((p + e) / totalActiveDays) * 100) : 100;
             const absPercentage = totalActiveDays > 0 ? Math.round((a / totalActiveDays) * 100) : 0;
