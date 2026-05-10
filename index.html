@@ -429,7 +429,21 @@
 
     <div id="customAlertModal" class="modal-overlay"><div class="modal-box" style="max-width: 400px; text-align: center;"><h3 id="customAlertTitle" style="color: var(--primary); margin-bottom: 15px; font-size: 20px;">تنبيه</h3><div id="customAlertMessage" style="margin-bottom: 30px; font-size: 16px; color: var(--text-main); font-weight: 500; line-height: 1.6;"></div><div id="customAlertButtons" style="display: flex; gap: 10px; justify-content: center;"></div></div></div>
     
-    <div id="adminExcusesModal" class="modal-overlay"><div class="modal-box" style="max-width: 700px;"><div class="modal-header"><h3 style="color: var(--primary);">إدارة الأعذار</h3><button class="close-btn" onclick="window.closeModals()">&times;</button></div><div id="adminExcusesContent" style="max-height: 60vh; overflow-y: auto; padding-right: 5px;"></div></div></div>
+    <div id="adminExcusesModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 style="color: var(--primary);">إدارة الأعذار</h3>
+                <button class="close-btn" onclick="window.closeModals()">&times;</button>
+            </div>
+            <div id="adminExcusesContent" style="max-height: 60vh; overflow-y: auto; padding-right: 5px; margin-bottom: 20px;"></div>
+            <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <button class="modal-btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; padding: 14px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" onclick="window.exportExcusesToWord()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    تصدير تقرير الأعذار (Word) 📄
+                </button>
+            </div>
+        </div>
+    </div>
     
     <div id="studentExcuseModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 500px;">
@@ -1395,6 +1409,35 @@
             window.openAdminExcusesModal();
             window.updateExcuseBadge();
             window.showCustomAlert('تم حذف العذر نهائياً من السجل ✅');
+        };
+
+        window.exportExcusesToWord = () => { 
+            const ex = JSON.parse(localStorage.getItem(window.EXCUSES_KEY)) || [];
+            if (ex.length === 0) return window.showCustomAlert('لا توجد أعذار مسجلة لتصديرها.');
+            
+            const dStr = new Date().toLocaleDateString('ar-SA');
+            let rows = '';
+            
+            // ترتيب الأعذار من الأحدث للأقدم
+            ex.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach((e, i) => {
+                const sName = window.students.find(x => x.id === e.studentId)?.name || 'طالب غير معروف';
+                let stTxt = 'قيد المراجعة'; let stCol = '#f59e0b';
+                if(e.status === 'accepted') { stTxt = 'مقبول'; stCol = '#10b981'; }
+                else if(e.status === 'rejected') { stTxt = 'تم الرفض'; stCol = '#e11d48'; }
+                
+                rows += `<tr><td style="padding:10px; border:1px solid #cbd5e1;">${i+1}</td><td style="padding:10px; border:1px solid #cbd5e1; font-weight:bold;">${sName}</td><td style="padding:10px; border:1px solid #cbd5e1;" dir="ltr">${e.date}</td><td style="padding:10px; border:1px solid #cbd5e1;">${e.type}</td><td style="padding:10px; border:1px solid #cbd5e1; font-weight:bold; color:${stCol};">${stTxt}</td></tr>`;
+            });
+            
+            const c = `<h1 style="color:#4f46e5; font-family:'Tajawal', sans-serif;">تقرير سجل الأعذار</h1><p style="text-align:center; font-size:14pt; color:#64748b; font-family:'Tajawal', sans-serif;">تاريخ استخراج التقرير: ${dStr}</p><table style="width:100%; border-collapse:collapse; text-align:center; font-family:'Tajawal', sans-serif;"><tr style="background:#f1f5f9;"><th style="padding:12px; border:1px solid #cbd5e1;">م</th><th style="padding:12px; border:1px solid #cbd5e1;">اسم الطالب</th><th style="padding:12px; border:1px solid #cbd5e1;">التاريخ</th><th style="padding:12px; border:1px solid #cbd5e1;">نوع العذر</th><th style="padding:12px; border:1px solid #cbd5e1;">حالة العذر</th></tr>${rows}</table>`;
+            
+            const w = getWordWrapper('تقرير الأعذار', c);
+            const b = new Blob(['\ufeff', w], { type: 'application/msword' });
+            const u = URL.createObjectURL(b);
+            const l = document.createElement('a');
+            l.href = u;
+            l.download = 'تقرير_سجل_الأعذار.doc';
+            l.click();
+            window.closeModals();
         };
 
         window.switchLoginTab = m => { 
